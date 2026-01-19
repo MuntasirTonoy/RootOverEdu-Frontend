@@ -1,0 +1,42 @@
+
+> root-nahid@0.1.0 build
+> next build
+
+▲ Next.js 16.1.2 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+
+🌼   [35mdaisyUI[39m [2m4.12.24[22m
+Error: `addUtilities({ '@media (min-width: 640px)' : … })` defines an invalid utility selector. Utilities must be a single class name and start with a lowercase letter, eg. `.scrollbar-none`.
+    [2m[at Object.addUtilities (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\@tailwindcss\node\node_modules\tailwindcss\dist\lib.js:21:8742)][0m
+    [2m[at Object.addComponents (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\@tailwindcss\node\node_modules\tailwindcss\dist\lib.js:21:11097)][0m
+    [2m[at mainFunction (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\daisyui\src\index.js:57:3)][0m
+    [2m[at nn (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\@tailwindcss\node\node_modules\tailwindcss\dist\lib.js:27:2347)][0m
+    [2m[at on (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\@tailwindcss\node\node_modules\tailwindcss\dist\lib.js:27:1178)][0m
+    [2m[at async un (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\@tailwindcss\node\node_modules\tailwindcss\dist\lib.js:36:184)][0m
+    [2m[at async cn (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\@tailwindcss\node\node_modules\tailwindcss\dist\lib.js:38:631)][0m
+    [2m[at async Xr (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\@tailwindcss\node\dist\index.js:10:3417)][0m
+    [2m[at async I (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\@tailwindcss\postcss\dist\index.js:10:3977)][0m
+    [2m[at async Object.Once (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\@tailwindcss\postcss\dist\index.js:10:4249)][0m
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./src/app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: C:\Web\My-Practice-Projects\RootNahid\Frontend\src\app\globals.css:1:1: `addUtilities({ '@media (min-width: 640px)' : … })` defines an invalid utility selector. Utilities must be a single class name and start with a lowercase letter, eg. `.scrollbar-none`.
+    at Input.error (node_modules/postcss/lib/input.js:135:16) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\node_modules_fe693df6._.js:4651:22]
+    at Root.error (node_modules/postcss/lib/node.js:146:32) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\node_modules_fe693df6._.js:928:38]
+    [at Object.Once (C:\Web\My-Practice-Projects\RootNahid\Frontend\node_modules\@tailwindcss\postcss\dist\index.js:10:6911)]
+    at async LazyResult.runAsync (node_modules/postcss/lib/lazy-result.js:293:11) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\node_modules_fe693df6._.js:6206:21]
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[root-of-the-server]__51225daf._.js:146:36]
+    at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[root-of-the-server]__974941ed._.js:443:31]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.js [Server Component]
+
+
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[root-of-the-server]__51225daf._.js:146:36])
+    at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[root-of-the-server]__974941ed._.js:443:31])

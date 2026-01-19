@@ -1,0 +1,37 @@
+
+> root-nahid@0.1.0 build
+> next build
+
+▲ Next.js 16.1.2 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module 'tailwindcss'
+Require stack:
+- C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[root-of-the-server]__6d51cb5d._.js
+- C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[turbopack]_runtime.js
+- C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1225:15)]
+    [at Function._load (node:internal/modules/cjs/loader:1055:27)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:322:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1311:12)]
+    [at require (node:internal/modules/helpers:136:16)]
+    at turbopack:///[turbopack-node]/transforms/postcss.ts:49:25 [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[root-of-the-server]__6d51cb5d._.js:160:33]
+    [at <anonymous>]
+    at Module.init (turbopack:///[turbopack-node]/transforms/postcss.ts:43:33) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[root-of-the-server]__6d51cb5d._.js:155:35]
+    at run (turbopack:///[turbopack-node]/ipc/evaluate.ts:77:20) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[root-of-the-server]__44695d76._.js:429:26]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.js [Server Component]
+
+
+    at Module.init (turbopack:///[turbopack-node]/transforms/postcss.ts:43:33) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[root-of-the-server]__6d51cb5d._.js:155:35])
+    at run (turbopack:///[turbopack-node]/ipc/evaluate.ts:77:20) [C:\Web\My-Practice-Projects\RootNahid\Frontend\.next\build\chunks\[root-of-the-server]__44695d76._.js:429:26])
