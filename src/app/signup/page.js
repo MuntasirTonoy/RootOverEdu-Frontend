@@ -61,31 +61,6 @@ export default function SignupPage() {
         {/* Card */}
         <div className="bg-card/50 backdrop-blur-xl border border-border shadow-xl rounded-3xl p-8 space-y-8">
             
-             {/* Google Sign In */}
-             <button 
-                type="button"
-                onClick={handleGoogleSignIn}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-border rounded-xl shadow-sm bg-surface hover:bg-muted/50 transition-all duration-200 group"
-            >
-                <svg className="h-5 w-5 transition-transform group-hover:scale-110" aria-hidden="true" viewBox="0 0 24 24">
-                <path d="M12.0003 20.45c4.6667 0 8.6167-3.15 9.95-7.4667H12.0003V9.55005h13.3333c0.1334 0.96665 0.2 1.98335 0.2 3.01665 0 7.7333-5.5 13.4333-13.5333 13.4333-7.7333 0-14-6.2667-14-14s6.2667-14 14-14c3.7833 0 7.2167 1.4 9.8833 3.9l-3.8 3.8c-1.55-1.5-3.6666-2.3833-6.0833-2.3833-4.9666 0-9.0166 4.05-9.0166 9.0166s4.05 9.0167 9.0166 9.0167z" fill="currentColor" className="text-foreground" />
-                <path d="M25.3336 12.5667c0-1.0333-.0667-2.05-.2-3.01665H12.0003v3.4333h7.4833c-.35 1.7-1.3333 3.15-2.8167 4.15l4.5 3.5c2.6334-2.4333 4.1667-6.0167 4.1667-8.06665z" fill="#4285F4" />
-                <path d="M12.0003 26c3.6 0 6.6334-1.1833 8.9-3.2666l-4.5-3.5c-1.2.8166-2.7334 1.3-4.4 1.3-3.3834 0-6.25-2.2834-7.2667-5.3667l-4.4166 3.4167C2.9669 22.85 7.15026 26 12.0003 26z" fill="#34A853" />
-                <path d="M4.7336 15.1667C4.2169 13.6167 4.2169 11.95 4.7336 10.4L.31693 6.98335C-1.48307 10.5667-1.48307 14.8333.31693 18.4167l4.41667-3.25z" fill="#FBBC05" />
-                <path d="M12.0003 7.0333c1.9667 0 3.7333.7 5.1167 1.8667l3.8-3.8c-2.6666-2.5-6.1-3.9-9.8833-3.9-4.85 0-9.0333 3.15-11.6833 7.38335L3.7336 11.8c1.0167-3.0833 3.8834-5.3667 7.2667-5.3667z" fill="#EA4335" />
-                </svg>
-                <span className="font-semibold text-foreground">Sign up with Google</span>
-            </button>
-
-            <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-border"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-card text-muted-foreground backdrop-blur-xl">Or register with email</span>
-                </div>
-            </div>
-
             <form onSubmit={handleSignup} className="space-y-6">
                  {/* Name Input */}
                  <div className="group space-y-2">
@@ -160,6 +135,31 @@ export default function SignupPage() {
                 )}
                 </button>
             </form>
+
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-border"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-card text-muted-foreground backdrop-blur-xl">Or continue with</span>
+                </div>
+            </div>
+
+             {/* Google Sign In */}
+             <button 
+                type="button"
+                onClick={handleGoogleSignIn}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-border rounded-xl shadow-sm bg-surface hover:bg-muted/50 transition-all duration-200 group"
+            >
+                <svg className="h-5 w-5 transition-transform group-hover:scale-110" aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12.0003 20.45c4.6667 0 8.6167-3.15 9.95-7.4667H12.0003V9.55005h13.3333c0.1334 0.96665 0.2 1.98335 0.2 3.01665 0 7.7333-5.5 13.4333-13.5333 13.4333-7.7333 0-14-6.2667-14-14s6.2667-14 14-14c3.7833 0 7.2167 1.4 9.8833 3.9l-3.8 3.8c-1.55-1.5-3.6666-2.3833-6.0833-2.3833-4.9666 0-9.0166 4.05-9.0166 9.0166s4.05 9.0167 9.0166 9.0167z" fill="currentColor" className="text-foreground" />
+                <path d="M25.3336 12.5667c0-1.0333-.0667-2.05-.2-3.01665H12.0003v3.4333h7.4833c-.35 1.7-1.3333 3.15-2.8167 4.15l4.5 3.5c2.6334-2.4333 4.1667-6.0167 4.1667-8.06665z" fill="#4285F4" />
+                <path d="M12.0003 26c3.6 0 6.6334-1.1833 8.9-3.2666l-4.5-3.5c-1.2.8166-2.7334 1.3-4.4 1.3-3.3834 0-6.25-2.2834-7.2667-5.3667l-4.4166 3.4167C2.9669 22.85 7.15026 26 12.0003 26z" fill="#34A853" />
+                <path d="M4.7336 15.1667C4.2169 13.6167 4.2169 11.95 4.7336 10.4L.31693 6.98335C-1.48307 10.5667-1.48307 14.8333.31693 18.4167l4.41667-3.25z" fill="#FBBC05" />
+                <path d="M12.0003 7.0333c1.9667 0 3.7333.7 5.1167 1.8667l3.8-3.8c-2.6666-2.5-6.1-3.9-9.8833-3.9-4.85 0-9.0333 3.15-11.6833 7.38335L3.7336 11.8c1.0167-3.0833 3.8834-5.3667 7.2667-5.3667z" fill="#EA4335" />
+                </svg>
+                <span className="font-semibold text-foreground">Sign up with Google</span>
+            </button>
         </div>
 
         {/* Footer */}
