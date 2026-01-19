@@ -21,6 +21,11 @@ RootNahid is a modern, responsive e-learning platform dedicated to mastering mat
 - **Authentication**: Secure registration and login powered by **Firebase Authentication**.
 - **Responsive Design**: Fully optimized experience across mobile, tablet, and desktop devices.
 
+## 🔗 Deployment
+
+- **Live Frontend**: [https://roottonahid.vercel.app](https://roottonahid.vercel.app)
+- **Live Backend API**: [https://root-nahid-backend.vercel.app](https://root-nahid-backend.vercel.app)
+
 ## 🛠 Tech Stack
 
 - **Framework**: [Next.js 16](https://nextjs.org/) (React 19)
