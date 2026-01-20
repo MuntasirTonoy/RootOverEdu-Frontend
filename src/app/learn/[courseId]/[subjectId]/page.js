@@ -1,146 +1,290 @@
-'use client';
-import { use } from 'react';
-import LessonSidebar from '@/components/LessonSidebar';
-import { courses } from '@/lib/dummy-data';
-import { useRouter } from 'next/navigation';
+"use client";
+import { use, useEffect, useState } from "react";
+import LessonSidebar from "@/components/LessonSidebar";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import {
+  ArrowDownToLine,
+  Bookmark,
+  CircleCheckBig,
+  Loader2,
+} from "lucide-react";
+import AuthGuard from "@/components/AuthGuard";
+import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
+import { auth } from "@/lib/firebase";
 
-export default function LearnPage({ params, searchParams }) {
+export default function LearnPage({ params }) {
   const { courseId, subjectId } = use(params);
-  const router = useRouter();
-  
-  // Handling searchParams for active video state
-  // In a real app we might use useSearchParams(), 
-  // but to keep consistent with previous server component logic we can use the prop wrapper
-  // OR just rely on state if we want SPA feel. Let's use URL for shareability.
-  
-  // *Wait*, 'use(searchParams)' hook is not standard for converting server searchParams to client.
-  // We need to grab them from window or use `useSearchParams`.
-  // Since we are in a Client Component (marked 'use client' for interactivity), we should use `useSearchParams`.
-  
   return <LearnPageContent courseId={courseId} subjectId={subjectId} />;
 }
-
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowDownToLine, Bookmark, CircleCheckBig } from 'lucide-react';
 
 function LearnPageContent({ courseId, subjectId }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  
-  const course = courses.find(c => c.id === courseId);
-  const subject = course?.subjects.find(s => s.id === subjectId);
+  const { user } = useAuth();
 
-  const chapterId = searchParams.get('chapter') || (subject?.chapters[0]?.id);
-  const partId = searchParams.get('part') || (subject?.chapters[0]?.parts[0]?.id);
-  
-  if (!course || !subject) return <div>Not Found</div>;
+  const [subject, setSubject] = useState(null);
+  const [chapters, setChapters] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const currentChapter = subject.chapters.find(c => c.id === chapterId);
-  const currentPart = currentChapter?.parts.find(p => p.id === partId);
+  // URL Params
+  const chapterId = searchParams.get("chapter");
+  const partId = searchParams.get("part");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) return;
+
+      try {
+        setLoading(true);
+        const token = await auth.currentUser.getIdToken();
+        const header = { headers: { Authorization: `Bearer ${token}` } };
+
+        // 1. Fetch Subject Details
+        // We use subjectId directly assuming the URL contains the DB _id of the subject
+        // If the URL contains a slug, we might need a different endpoint or lookup
+        // Assuming subjectId passed in param is the DB ID (matches previous conversations)
+        const subjectRes = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/subjects/${subjectId}`,
+          header,
+        );
+
+        // 2. Fetch Videos (Flat List)
+        const videosRes = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/videos`, // Use public endpoint if available, but admin/videos is all videos.
+          // Wait, previous research showed /api/videos/:subjectId in userRoutes.js
+          // Let's use that specific endpoint for the user facing page
+          header,
+        );
+        // Actually, let's use the specific endpoint we saw in userController: /api/videos/:subjectId
+        // But wait, axios.get below...
+        const userVideosRes = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/videos/${subjectId}`,
+          header,
+        );
+
+        setSubject(subjectRes.data);
+
+        // 3. Group Videos into Chapters
+        // Backend returns flat list of videos with 'chapterName'
+        const videos = userVideosRes.data;
+        const groupedMap = new Map();
+
+        videos.forEach((v) => {
+          if (!groupedMap.has(v.chapterName)) {
+            groupedMap.set(v.chapterName, {
+              id: v.chapterName, // Use name as ID for now
+              title: v.chapterName,
+              parts: [],
+            });
+          }
+          groupedMap.get(v.chapterName).parts.push({
+            id: v._id,
+            title: v.title,
+            videoUrl: v.videoUrl,
+            noteLink: v.noteLink,
+            isFree: v.isFree,
+            partNumber: v.partNumber,
+            description: v.description,
+          });
+        });
+
+        // Convert Map to Array and Sort parts by partNumber
+        const groupedChapters = Array.from(groupedMap.values()).map((c) => ({
+          ...c,
+          parts: c.parts.sort((a, b) => a.partNumber - b.partNumber),
+        }));
+
+        setChapters(groupedChapters);
+      } catch (error) {
+        console.error("Failed to load content:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [subjectId, user]);
+
+  // Determine Current Lesson
+  // If no params, default to first chapter's first part
+  useEffect(() => {
+    if (!loading && chapters.length > 0 && (!chapterId || !partId)) {
+      const firstChapter = chapters[0];
+      const firstPart = firstChapter?.parts[0];
+      if (firstChapter && firstPart) {
+        router.replace(
+          `/learn/${courseId}/${subjectId}?chapter=${encodeURIComponent(firstChapter.id)}&part=${firstPart.id}`,
+        );
+      }
+    }
+  }, [loading, chapters, chapterId, partId, router, courseId, subjectId]);
+
+  // Find active data objects
+  // Note: chapter IDs in our grouped data are just the names (strings)
+  const currentChapter =
+    chapters.find((c) => c.id === chapterId) || chapters[0];
+  const currentPart =
+    currentChapter?.parts?.find((p) => p.id === partId) ||
+    currentChapter?.parts?.[0];
 
   const handleLessonSelect = (cid, pid) => {
-     router.push(`/learn/${courseId}/${subjectId}?chapter=${cid}&part=${pid}`);
+    // chapter IDs are names, so we need to encode/decode, but cleaner to just push
+    router.push(
+      `/learn/${courseId}/${subjectId}?chapter=${encodeURIComponent(cid)}&part=${pid}`,
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-black">
+        <Loader2 className="animate-spin text-primary" size={40} />
+      </div>
+    );
+  }
+
+  if (!subject)
+    return (
+      <div className="p-8 text-center text-red-500">
+        Subject not found or access denied.
+      </div>
+    );
+
+  // Helper to ensure URL is embeddable
+  const getEmbedUrl = (url) => {
+    if (!url) return "";
+    // If already embed, return
+    if (url.includes("youtube.com/embed/")) return url;
+
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11
+      ? `https://www.youtube.com/embed/${match[2]}`
+      : url;
   };
 
   return (
-    <div className="h-screen flex flex-col bg-base-300">
-       
-       <div className="flex-1 flex overflow-hidden">
+    <AuthGuard>
+      <div className="h-screen flex flex-col bg-base-300">
+        <div className="flex-1 flex overflow-hidden">
           {/* Sidebar */}
           <div className="w-80 flex-shrink-0 hidden lg:block">
-            <LessonSidebar 
-                chapters={subject.chapters}
-                currentChapterId={chapterId}
-                currentPartId={partId}
-                onSelect={handleLessonSelect}
+            <LessonSidebar
+              chapters={chapters}
+              currentChapterId={chapterId}
+              currentPartId={partId}
+              onSelect={handleLessonSelect}
             />
           </div>
 
           {/* Main Content */}
           <main className="flex-1 overflow-y-auto p-4 lg:p-8">
-             <div className="max-w-6xl mx-auto">
-                
-                {/* Header */}
-                <div className="flex justify-between items-center mb-6">
-                   <div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-                         <span>{subject.title}</span>
-                         <span>/</span>
-                         <span>{currentChapter?.title}</span>
-                      </div>
-                      <h1 className="text-2xl font-bold text-dark">{currentPart?.title || 'Select a lesson'}</h1>
-                   </div>
+            <div className="max-w-6xl mx-auto">
+              {/* Header */}
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                    <span>{subject.title || "Subject"}</span>
+                    <span>/</span>
+                    <span>{currentChapter?.title}</span>
+                  </div>
+                  <h1 className="text-2xl font-bold text-dark">
+                    {currentPart?.title || "Select a lesson"}
+                  </h1>
                 </div>
+              </div>
 
-                {/* Video Player Area */}
-                <div className="aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl mb-8 border-4 border-white/50 ring-1 ring-gray-100 relative group">
-                   {currentPart?.videoUrl ? (
-                      <iframe 
-                        src={currentPart.videoUrl} 
-                        className="w-full h-full" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                   ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-500">No Video Available</div>
-                   )}
+              {/* Video Player Area */}
+              <div className="aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl mb-8 border-4 border-white/50 ring-1 ring-gray-100 relative group">
+                {currentPart?.videoUrl ? (
+                  <iframe
+                    src={getEmbedUrl(currentPart.videoUrl)}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-500">
+                    {chapters.length === 0
+                      ? "No contents available yet."
+                      : "Select a video to play"}
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile Sidebar - Below Video */}
+              <div className="lg:hidden h-[500px] mb-8 border border-base-200 rounded-xl overflow-hidden">
+                <LessonSidebar
+                  chapters={chapters}
+                  currentChapterId={chapterId}
+                  currentPartId={partId}
+                  onSelect={handleLessonSelect}
+                />
+              </div>
+
+              {/* Action Bar */}
+              <div className="flex flex-wrap gap-4 mb-12">
+                <button className="flex-1 py-3 px-6 bg-green-50 text-green-700 font-bold rounded-xl hover:bg-base-content hover:text-base-100 hover:border-base-content flex items-center justify-center gap-2 border border-green-200 transition-colors">
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">
+                    <CircleCheckBig />
+                  </div>
+                  Mark as Completed
+                </button>
+                <button className="flex-1 py-3 px-6 bg-base-300 text-base-content font-bold rounded-xl border border-gray-200 hover:bg-base-content hover:text-base-100 hover:border-base-content flex items-center justify-center gap-2 transition-colors">
+                  <span>
+                    {" "}
+                    <Bookmark />
+                  </span>{" "}
+                  Save Lesson
+                </button>
+                <button className="flex-1 py-3 px-6 bg-base-300 text-base-content font-bold rounded-xl border border-gray-200 hover:bg-base-content hover:text-base-100 hover:border-base-content flex items-center justify-center gap-2 transition-colors">
+                  <span>
+                    {" "}
+                    <Bookmark />
+                  </span>{" "}
+                  Save Lesson
+                </button>
+                <a
+                  href={currentPart?.noteLink || "#"}
+                  target={currentPart?.noteLink ? "_blank" : "_self"}
+                  onClick={(e) => !currentPart?.noteLink && e.preventDefault()}
+                  className={`flex-1 py-3 px-6 font-bold rounded-xl border flex items-center justify-center gap-2 transition-colors
+                    ${
+                      currentPart?.noteLink
+                        ? "bg-base-300 text-base-content border-gray-200 hover:bg-base-content hover:text-base-100 hover:border-base-content cursor-pointer"
+                        : "bg-base-200 text-gray-400 border-transparent cursor-not-allowed opacity-50"
+                    }`}
+                >
+                  <span>
+                    {" "}
+                    <ArrowDownToLine />
+                  </span>{" "}
+                  Download Notes
+                </a>
+              </div>
+
+              {/* Description */}
+              <div className="grid md:grid-cols-1 gap-8">
+                <div>
+                  <div className="bg-base-100 p-8 rounded-3xl shadow-sm">
+                    <h3 className="text-xl font-bold text-dark mb-4">
+                      About this Lesson
+                    </h3>
+                    <div className="text-gray-500 leading-relaxed mb-6 whitespace-pre-wrap">
+                      {currentPart?.description ||
+                        (currentPart?.title
+                          ? `You are watching ${currentPart.title}. No additional description provided.`
+                          : "Select a lesson to start learning.")}
+                    </div>
+                  </div>
                 </div>
-
-                {/* Mobile Sidebar - Below Video */}
-                <div className="lg:hidden h-[500px] mb-8 border border-base-200 rounded-xl overflow-hidden">
-                   <LessonSidebar 
-                      chapters={subject.chapters}
-                      currentChapterId={chapterId}
-                      currentPartId={partId}
-                      onSelect={handleLessonSelect}
-                   />
-                </div>
-
-                {/* Action Bar */}
-                <div className="flex flex-wrap gap-4 mb-12">
-                   <button className="flex-1 py-3 px-6 bg-green-50 text-green-700 font-bold rounded-xl hover:bg-base-content hover:text-base-100 hover:border-base-content flex items-center justify-center gap-2 border border-green-200 transition-colors">
-                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs"><CircleCheckBig /></div>
-                      Mark as Completed
-                   </button>
-                   <button className="flex-1 py-3 px-6 bg-base-300 text-base-content font-bold rounded-xl border border-gray-200 hover:bg-base-content hover:text-base-100 hover:border-base-content flex items-center justify-center gap-2 transition-colors">
-                      <span>    <Bookmark /></span> Save Lesson
-                   </button>
-                   <button className="flex-1 py-3 px-6 bg-base-300 text-base-content font-bold rounded-xl border border-gray-200 hover:bg-base-content hover:text-base-100 hover:border-base-content flex items-center justify-center gap-2 transition-colors">
-                      <span> <ArrowDownToLine /></span> Download Notes
-                   </button>
-                </div>
-
-                {/* Description and Quiz Area */}
-                <div className="grid md:grid-cols-3 gap-8">
-                   <div className="md:col-span-2">
-                      <div className="bg-base-100 p-8 rounded-3xl shadow-sm">
-                         <h3 className="text-xl font-bold text-dark mb-4">About this Lesson</h3>
-                         <p className="text-gray-500 leading-relaxed mb-6">
-                            In this lesson, we will explore the fundamental concepts of {currentPart?.title}. 
-                            Understanding this is crucial for mastering the advanced topics in {subject.title}.
-                            Make sure to take notes and complete the practice quiz below.
-                         </p>
-                        
-                      </div>
-                   </div>
-
-                   <div>
-                      <div className="bg-yellow-50 p-6 rounded-3xl border border-yellow-100">
-                         <div className="w-10 h-10 bg-yellow-100 rounded-xl mb-4 flex items-center justify-center text-yellow-600 font-bold text-xl">
-                            ?
-                         </div>
-                         <h4 className="text-lg font-bold text-dark mb-2">Upcoming Quiz</h4>
-                         <p className="text-sm text-gray-600 mb-4">
-                            Test your knowledge on {currentChapter?.title} basics. Available after completing Part 3.
-                         </p>
-                      </div>
-                   </div>
-                </div>
-
-             </div>
+              </div>
+            </div>
           </main>
-       </div>
-    </div>
+        </div>
+      </div>
+    </AuthGuard>
   );
 }

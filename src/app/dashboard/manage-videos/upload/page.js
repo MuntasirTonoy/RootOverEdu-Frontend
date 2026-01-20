@@ -1,90 +1,35 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { Plus, Trash, Save, BookOpen, Video, Link as LinkIcon, DollarSign, Layers, ChevronRight, ChevronDown, Upload } from 'lucide-react';
-import axios from 'axios';
-import { useAuth } from '@/context/AuthContext';
-import { auth } from '@/lib/firebase';
-import Swal from 'sweetalert2';
+import { useState, useRef, useEffect } from "react";
+import {
+  Plus,
+  Trash,
+  Save,
+  BookOpen,
+  Video,
+  Link as LinkIcon,
+  DollarSign,
+  Layers,
+  ChevronRight,
+  ChevronDown,
+  Upload,
+  FileText,
+  ArrowLeft,
+} from "lucide-react";
+import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
+import { auth } from "@/lib/firebase";
+import Swal from "sweetalert2";
+import Link from "next/link";
 
-// ------------------------------------------------------------------
-// 1. National University Data (Math & Physics)
-// ------------------------------------------------------------------
-const nuData = {
-  Mathematics: {
-    "1st Year": [
-      { code: "213701", title: "Fundamentals of Mathematics" },
-      { code: "213703", title: "Calculus-I" },
-      { code: "213705", title: "Linear Algebra" },
-      { code: "213707", title: "Analytic and Vector Geometry" },
-    ],
-    "2nd Year": [
-      { code: "223701", title: "Calculus-II" },
-      { code: "223703", title: "Ordinary Differential Equations" },
-      { code: "223705", title: "Computer Programming (Fortran)" },
-      { code: "223706", title: "Math Lab (Practical)" },
-    ],
-    "3rd Year": [
-      { code: "233701", title: "Abstract Algebra" },
-      { code: "233703", title: "Real Analysis" },
-      { code: "233705", title: "Numerical Analysis" },
-      { code: "233707", title: "Complex Analysis" },
-      { code: "233709", title: "Differential Geometry" },
-      { code: "233711", title: "Mechanics" },
-      { code: "233713", title: "Linear Programming" },
-      { code: "233714", title: "Math Lab (Practical)" },
-    ],
-    "4th Year": [
-      { code: "243701", title: "Theory of Numbers" },
-      { code: "243703", title: "Topology & Functional Analysis" },
-      { code: "243705", title: "Methods of Applied Mathematics" },
-      { code: "243707", title: "Tensor Analysis" },
-      { code: "243709", title: "Partial Differential Equations" },
-      { code: "243711", title: "Hydrodynamics" },
-      { code: "243713", title: "Discrete Mathematics" },
-      { code: "243715", title: "Astronomy" },
-      { code: "243717", title: "Mathematical Modeling in Biology" },
-    ],
-  },
-  Physics: {
-    "1st Year": [
-      { code: "212701", title: "Mechanics" },
-      { code: "212703", title: "Properties of Matter, Waves & Oscillations" },
-      { code: "212705", title: "Heat, Thermodynamics and Radiation" },
-      { code: "212706", title: "Physics Practical-I" },
-    ],
-    "2nd Year": [
-      { code: "222701", title: "Electricity & Magnetism" },
-      { code: "222703", title: "Geometrical & Physical Optics" },
-      { code: "222705", title: "Classical Mechanics" },
-      { code: "222706", title: "Physics Practical-II" },
-    ],
-    "3rd Year": [
-      { code: "232701", title: "Atomic & Molecular Physics" },
-      { code: "232703", title: "Quantum Mechanics-I" },
-      { code: "232705", title: "Computer Fundamentals and Numerical Analysis" },
-      { code: "232707", title: "Electronics-I" },
-      { code: "232709", title: "Nuclear Physics-I" },
-      { code: "232711", title: "Solid State Physics-I" },
-      { code: "232713", title: "Mathematical Physics" },
-      { code: "232714", title: "Physics Practical-III" },
-    ],
-    "4th Year": [
-      { code: "242701", title: "Nuclear Physics-II" },
-      { code: "242703", title: "Solid State Physics-II" },
-      { code: "242705", title: "Quantum Mechanics-II" },
-      { code: "242707", title: "Electronics-II" },
-      { code: "242709", title: "Classical Electrodynamics" },
-      { code: "242711", title: "Statistical Mechanics" },
-      { code: "242713", title: "Computer Application and Programming" },
-      { code: "242715", title: "Theory of Relativity and Cosmology" },
-      { code: "242716", title: "Physics Practical-IV" },
-    ],
-  },
-};
-
-// --- Reusable Dropdown Component ---
-const CustomDropdown = ({ label, value, options, onChange, disabled, placeholder }) => {
+const CustomDropdown = ({
+  label,
+  value,
+  options,
+  onChange,
+  disabled,
+  placeholder,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -108,27 +53,30 @@ const CustomDropdown = ({ label, value, options, onChange, disabled, placeholder
       <label className="label">
         <span className="label-text font-medium">{label}</span>
       </label>
-      
+
       <div className="relative w-full">
-        <button 
+        <button
           type="button"
           onClick={() => !disabled && setIsOpen(!isOpen)}
-          className={`w-full flex justify-between items-center px-4 py-3 bg-surface border border-transparent hover:bg-muted text-foreground font-normal rounded-xl transition-all ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          className={`w-full flex justify-between items-center px-4 py-3 bg-surface border border-transparent hover:bg-muted text-foreground font-normal rounded-xl transition-all ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
         >
           <span className={!value ? "text-muted-foreground" : ""}>
             {value || placeholder}
           </span>
-          <ChevronDown size={16} className={`opacity-50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown
+            size={16}
+            className={`opacity-50 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          />
         </button>
-        
+
         {isOpen && !disabled && (
           <div className="absolute top-full left-0 right-0 mt-2 p-2 bg-card rounded-xl shadow-xl border border-border max-h-60 overflow-y-auto z-[100]">
             <ul className="space-y-1">
               {options.map((opt, idx) => (
                 <li key={idx} onClick={() => handleSelect(opt.value)}>
-                   <div className="px-3 py-2 hover:bg-muted rounded-lg cursor-pointer text-sm text-foreground">
-                      {opt.label}
-                   </div>
+                  <div className="px-3 py-2 hover:bg-muted rounded-lg cursor-pointer text-sm text-foreground">
+                    {opt.label}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -141,24 +89,27 @@ const CustomDropdown = ({ label, value, options, onChange, disabled, placeholder
 
 const ManageVideos = () => {
   const { user } = useAuth();
-  
+
   // Data State
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
 
   // Selections
-  const [selectedDept, setSelectedDept] = useState('');
-  const [selectedYear, setSelectedYear] = useState('');
-  const [selectedSubjectId, setSelectedSubjectId] = useState(''); 
-  
+  const [selectedDept, setSelectedDept] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedSubjectId, setSelectedSubjectId] = useState("");
+
   // Fetch Subjects on Mount
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         setAvailableSubjects(res.data);
       } catch (error) {
         console.error("Error fetching subjects:", error);
@@ -172,37 +123,70 @@ const ManageVideos = () => {
   }, [user]);
 
   // Derived Data for Dropdowns
-  const departmentOptions = [...new Set(availableSubjects.map(s => s.department))].filter(Boolean).map(d => ({ label: d, value: d }));
-  
-  const yearOptions = selectedDept 
-    ? [...new Set(availableSubjects.filter(s => s.department === selectedDept).map(s => s.yearLevel))].filter(Boolean).map(y => ({ label: y, value: y })) 
-    : [];
-    
-  // Find currently selected subject object to display neatly
-  const currentSubjectObj = availableSubjects.find(s => s._id === selectedSubjectId);
+  const departmentOptions = [
+    ...new Set(availableSubjects.map((s) => s.department)),
+  ]
+    .filter(Boolean)
+    .map((d) => ({ label: d, value: d }));
 
-  const subjectOptions = (selectedDept && selectedYear) 
-    ? availableSubjects
-        .filter(s => s.department === selectedDept && s.yearLevel === selectedYear)
-        .map(s => ({ 
-            label: `[${s.code || 'N/A'}] ${s.title}`, 
-            value: s._id 
-        })) 
+  const yearOptions = selectedDept
+    ? [
+        ...new Set(
+          availableSubjects
+            .filter((s) => s.department === selectedDept)
+            .map((s) => s.yearLevel),
+        ),
+      ]
+        .filter(Boolean)
+        .map((y) => ({ label: y, value: y }))
     : [];
+
+  // Find currently selected subject object to display neatly
+  const currentSubjectObj = availableSubjects.find(
+    (s) => s._id === selectedSubjectId,
+  );
+
+  const subjectOptions =
+    selectedDept && selectedYear
+      ? availableSubjects
+          .filter(
+            (s) =>
+              s.department === selectedDept && s.yearLevel === selectedYear,
+          )
+          .map((s) => {
+            // Handle standard string _id, MongoDB export format { $oid: '...' }, or fallback
+            // This ensures we always get a usable ID string if possible.
+            const idVal = s._id?.$oid || s._id;
+
+            if (!idVal) return null; // Skip if no ID found
+
+            return {
+              label: `[${s.code || "N/A"}] ${s.title}`,
+              value: idVal,
+            };
+          })
+          .filter(Boolean) // Remove nulls
+      : [];
 
   // Form Data
-  const [chapterName, setChapterName] = useState('');
+  const [chapterName, setChapterName] = useState("");
   const [videoParts, setVideoParts] = useState([
-    { partNumber: 1, title: '', videoUrl: '', noteLink: '', isFree: false }
+    { partNumber: 1, title: "", videoUrl: "", noteLink: "", isFree: false },
   ]);
-  
+
   const [loading, setLoading] = useState(false);
 
   // Handlers
   const addPart = () => {
     setVideoParts([
       ...videoParts,
-      { partNumber: videoParts.length + 1, title: '', videoUrl: '', noteLink: '', isFree: false }
+      {
+        partNumber: videoParts.length + 1,
+        title: "",
+        videoUrl: "",
+        noteLink: "",
+        isFree: false,
+      },
     ]);
   };
 
@@ -220,9 +204,28 @@ const ManageVideos = () => {
     setVideoParts(newParts);
   };
 
+  // Helper to convert YouTube links to Embed format
+  const getEmbedUrl = (url) => {
+    if (!url) return "";
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11
+      ? `https://www.youtube.com/embed/${match[2]}`
+      : url;
+  };
+
   const handleSubmit = async () => {
-    if (!selectedSubjectId || !chapterName || videoParts.some(p => !p.videoUrl)) {
-      Swal.fire('Missing Fields', 'Please select Department, Year, Subject and fill in Video URLs.', 'warning');
+    if (
+      !selectedSubjectId ||
+      !chapterName ||
+      videoParts.some((p) => !p.videoUrl)
+    ) {
+      Swal.fire(
+        "Missing Fields",
+        "Please select Department, Year, Subject and fill in Video URLs.",
+        "warning",
+      );
       return;
     }
 
@@ -237,24 +240,38 @@ const ManageVideos = () => {
           chapterName: chapterName,
           subjectId: selectedSubjectId, // Sending correct ID
           partNumber: part.partNumber,
-          videoUrl: part.videoUrl,
+          videoUrl: getEmbedUrl(part.videoUrl),
           noteLink: part.noteLink,
-          isFree: part.isFree
+          description: part.description,
+          isFree: part.isFree,
         };
 
-        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/video`, videoData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/video`,
+          videoData,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         successCount++;
       }
 
-      Swal.fire('Success', `Uploaded ${successCount} videos for ${chapterName}`, 'success');
-      setChapterName('');
-      setVideoParts([{ partNumber: 1, title: '', videoUrl: '', noteLink: '', isFree: false }]);
-
+      Swal.fire(
+        "Success",
+        `Uploaded ${successCount} videos for ${chapterName}`,
+        "success",
+      );
+      setChapterName("");
+      setVideoParts([
+        { partNumber: 1, title: "", videoUrl: "", noteLink: "", isFree: false },
+      ]);
     } catch (error) {
       console.error("Error creating videos:", error);
-      Swal.fire('Upload Failed', 'Something went wrong. Check console.', 'error');
+      Swal.fire(
+        "Upload Failed",
+        "Something went wrong. Check console.",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -262,46 +279,58 @@ const ManageVideos = () => {
 
   return (
     <div className="min-h-screen bg-background font-sans pb-40">
-      
       {/* ------------------- HEADER ------------------- */}
-      <div className="bg-background border-b border-border">
+      <div className="bg-background border-b border-border sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-6 py-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-sm">
-             <Upload size={24} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Upload Panel</h1>
-            <p className="text-sm text-muted-foreground">Upload and organize content</p>
+          <Link
+            href="/dashboard/manage-videos"
+            className="btn btn-ghost btn-sm btn-circle p-2 rounded-full bg-muted/0 hover:bg-muted text-foreground"
+          >
+            <ArrowLeft size={20} />
+          </Link>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shadow-sm">
+              <Upload size={20} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">
+                Upload Videos
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                Upload and organize videos
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto p-6 space-y-6">
-
         {/* ------------------- 1. SELECTION CARD ------------------- */}
         <div className="bg-card rounded-3xl shadow-sm border border-border p-5">
           <div className="overflow-visible z-10">
             <h2 className="text-base font-bold mb-4 flex gap-2 text-muted-foreground items-center">
-              <Layers size={18} /> Select options {dataLoading && <span className="loading loading-spinner loading-xs ml-2"></span>}
+              <Layers size={18} /> Select options{" "}
+              {dataLoading && (
+                <span className="loading loading-spinner loading-xs ml-2"></span>
+              )}
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              
               {/* Department Dropdown */}
-              <CustomDropdown 
+              <CustomDropdown
                 label="Department"
                 placeholder="Select Dept..."
                 value={selectedDept}
                 options={departmentOptions}
                 onChange={(val) => {
                   setSelectedDept(val);
-                  setSelectedYear('');
-                  setSelectedSubjectId('');
+                  setSelectedYear("");
+                  setSelectedSubjectId("");
                 }}
               />
 
               {/* Year Dropdown */}
-              <CustomDropdown 
+              <CustomDropdown
                 label="Year Level"
                 placeholder="Select Year..."
                 value={selectedYear}
@@ -309,21 +338,24 @@ const ManageVideos = () => {
                 disabled={!selectedDept}
                 onChange={(val) => {
                   setSelectedYear(val);
-                  setSelectedSubjectId('');
+                  setSelectedSubjectId("");
                 }}
               />
 
               {/* Subject Dropdown */}
-              <CustomDropdown 
+              <CustomDropdown
                 label="Subject"
                 placeholder="Select Subject..."
                 // Display the formatted string "[Code] Title" if selected, otherwise null
-                value={currentSubjectObj ? `[${currentSubjectObj.code || 'N/A'}] ${currentSubjectObj.title}` : ''}
+                value={
+                  currentSubjectObj
+                    ? `[${currentSubjectObj.code || "N/A"}] ${currentSubjectObj.title}`
+                    : ""
+                }
                 options={subjectOptions}
                 disabled={!selectedYear}
                 onChange={(val) => setSelectedSubjectId(val)}
               />
-
             </div>
           </div>
         </div>
@@ -331,7 +363,6 @@ const ManageVideos = () => {
         {/* ------------------- 2. CONTENT EDITOR ------------------- */}
         {selectedSubjectId && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            
             {/* Chapter Header */}
             <div className="bg-card rounded-3xl shadow-sm border border-border p-6">
               <div>
@@ -342,9 +373,9 @@ const ManageVideos = () => {
                       Chapter Name
                     </span>
                   </label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Chapter 1: Differential Calculus" 
+                  <input
+                    type="text"
+                    placeholder="e.g. Chapter 1: Differential Calculus"
                     className="w-full text-base p-4 rounded-xl border border-transparent bg-surface outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all text-foreground"
                     value={chapterName}
                     onChange={(e) => setChapterName(e.target.value)}
@@ -363,13 +394,15 @@ const ManageVideos = () => {
               </div>
 
               {videoParts.map((part, index) => (
-                <div key={index} className="bg-card rounded-3xl shadow-sm border border-border relative group overflow-visible">
-                  
+                <div
+                  key={index}
+                  className="bg-card rounded-3xl shadow-sm border border-border relative group overflow-visible"
+                >
                   {/* Remove Button (Floating) */}
                   {videoParts.length > 1 && (
-                    <button 
+                    <button
                       onClick={() => removePart(index)}
-                      className="absolute -top-3 -right-3 rounded-full bg-red-500 text-white p-2 opacity-0 group-hover:opacity-100 transition-all z-10 shadow-lg"
+                      className="absolute -top-3 -right-3 rounded-md bg-red-500 text-white p-2 opacity-0 group-hover:opacity-100 transition-all z-10 shadow-lg"
                       title="Remove Part"
                     >
                       <Trash size={16} />
@@ -378,81 +411,118 @@ const ManageVideos = () => {
 
                   <div className="card-body p-6">
                     <div className="flex flex-col md:flex-row gap-6">
-                      
                       {/* Left: Indicator */}
                       <div className="flex md:flex-col items-center gap-2 md:w-16 md:pt-2 border-b md:border-b-0 md:border-r md:border-border pb-4 md:pb-0">
                         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
                           {part.partNumber}
                         </div>
-                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest hidden md:block rotate-180 md:rotate-0 mt-2">Part</span>
-                        <span className="text-sm font-bold md:hidden text-muted-foreground">Part {part.partNumber}</span>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest hidden md:block rotate-180 md:rotate-0 mt-2">
+                          Part
+                        </span>
+                        <span className="text-sm font-bold md:hidden text-muted-foreground">
+                          Part {part.partNumber}
+                        </span>
                       </div>
 
                       {/* Right: Inputs */}
                       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        
                         {/* Title & Video URL */}
                         <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="form-control">
-                            <label className="label label-text-alt text-muted-foreground font-semibold uppercase"> Video Title </label>
-                            <input 
-                              type="text" 
+                            <label className="label label-text-alt text-muted-foreground font-semibold uppercase">
+                              {" "}
+                              Video Title{" "}
+                            </label>
+                            <input
+                              type="text"
                               className="w-full text-sm p-3 rounded-xl border border-transparent bg-surface outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all text-foreground"
                               placeholder={`Part ${part.partNumber}`}
                               value={part.title}
-                              onChange={(e) => updatePart(index, 'title', e.target.value)} 
+                              onChange={(e) =>
+                                updatePart(index, "title", e.target.value)
+                              }
                             />
                           </div>
                           <div className="form-control">
-                            <label className="label label-text-alt text-primary font-bold uppercase">Video URL *</label>
-                            <input 
-                              type="text" 
+                            <label className="label label-text-alt text-primary font-bold uppercase">
+                              Video URL *
+                            </label>
+                            <input
+                              type="text"
                               className="w-full text-sm p-3 rounded-xl border border-transparent bg-surface outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all text-foreground"
                               placeholder="https://youtube.com/..."
                               value={part.videoUrl}
-                              onChange={(e) => updatePart(index, 'videoUrl', e.target.value)} 
+                              onChange={(e) =>
+                                updatePart(index, "videoUrl", e.target.value)
+                              }
                             />
                           </div>
                         </div>
 
                         {/* Note Link */}
                         <div className="form-control">
-                           <label className="label label-text-alt text-muted-foreground font-semibold uppercase flex gap-1 items-center">
-                            <LinkIcon size={12}/> PDF Note Link
-                           </label>
-                           <input 
-                            type="text" 
+                          <label className="label label-text-alt text-muted-foreground font-semibold uppercase flex gap-1 items-center">
+                            <LinkIcon size={12} /> PDF Note Link
+                          </label>
+                          <input
+                            type="text"
                             className="w-full text-sm p-3 rounded-xl border border-transparent bg-surface outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all text-foreground"
                             placeholder="Drive/Dropbox Link"
                             value={part.noteLink}
-                            onChange={(e) => updatePart(index, 'noteLink', e.target.value)} 
+                            onChange={(e) =>
+                              updatePart(index, "noteLink", e.target.value)
+                            }
+                          />
+                        </div>
+
+                        {/* Description */}
+                        <div className="form-control md:col-span-2">
+                          <label className="label label-text-alt text-muted-foreground font-semibold uppercase flex gap-1 items-center">
+                            <FileText size={12} /> Description
+                          </label>
+                          <textarea
+                            className="w-full text-sm p-3 rounded-xl border border-transparent bg-surface outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all text-foreground min-h-[80px]"
+                            placeholder="Brief description of this video part..."
+                            value={part.description || ""}
+                            onChange={(e) =>
+                              updatePart(index, "description", e.target.value)
+                            }
                           />
                         </div>
 
                         {/* Access Control */}
                         <div className="form-control">
                           <label className="label label-text-alt text-muted-foreground font-semibold uppercase flex gap-1 items-center">
-                            <DollarSign size={12}/> Access Type
+                            <DollarSign size={12} /> Access Type
                           </label>
                           <div className="flex items-center gap-3 p-3 rounded-xl bg-surface border-none w-full md:w-fit h-[46px]">
-                            <span className={`text-xs font-bold px-2 transition-colors ${!part.isFree ? 'text-error' : 'text-muted-foreground/30'}`}>Paid</span>
-                            <input 
-                              type="checkbox" 
+                            <span
+                              className={`text-xs font-bold px-2 transition-colors ${!part.isFree ? "text-error" : "text-muted-foreground/30"}`}
+                            >
+                              Paid
+                            </span>
+                            <input
+                              type="checkbox"
                               className="toggle toggle-sm toggle-success"
                               checked={part.isFree}
-                              onChange={(e) => updatePart(index, 'isFree', e.target.checked)}
+                              onChange={(e) =>
+                                updatePart(index, "isFree", e.target.checked)
+                              }
                             />
-                            <span className={`text-xs font-bold px-2 transition-colors ${part.isFree ? 'text-success' : 'text-muted-foreground/30'}`}>Free</span>
+                            <span
+                              className={`text-xs font-bold px-2 transition-colors ${part.isFree ? "text-success" : "text-muted-foreground/30"}`}
+                            >
+                              Free
+                            </span>
                           </div>
                         </div>
-
                       </div>
                     </div>
                   </div>
                 </div>
               ))}
 
-              <button 
+              <button
                 onClick={addPart}
                 className="flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground w-full hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all"
               >
@@ -462,51 +532,64 @@ const ManageVideos = () => {
             </div>
           </div>
         )}
-
       </div>
 
       {/* ------------------- FLOATING FOOTER ------------------- */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-md border-t border-border p-4 z-40 shadow-2xl">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          
           <div className="hidden md:flex items-center gap-2 text-sm">
-             {selectedSubjectId ? (
-                <>
-                  <span className="badge badge-primary badge-outline">{currentSubjectObj?.title || selectedSubjectId}</span>
-                  <ChevronRight size={14} className="text-base-content/30"/>
-                  <span className={chapterName ? "font-bold" : "italic opacity-50"}>
-                    {chapterName || "Untitled Chapter"}
-                  </span>
-                </>
-             ) : (
-               <span className="opacity-50 italic">No subject selected</span>
-             )}
+            {selectedSubjectId ? (
+              <>
+                <span className="badge badge-primary badge-outline">
+                  {currentSubjectObj?.title || selectedSubjectId}
+                </span>
+                <ChevronRight size={14} className="text-base-content/30" />
+                <span
+                  className={chapterName ? "font-bold" : "italic opacity-50"}
+                >
+                  {chapterName || "Untitled Chapter"}
+                </span>
+              </>
+            ) : (
+              <span className="opacity-50 italic">No subject selected</span>
+            )}
           </div>
 
           <div className="flex gap-3 w-full md:w-auto">
-            <button 
+            <button
               className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 font-semibold transition-all flex-1 md:flex-none"
               onClick={() => {
-                 setChapterName('');
-                 setVideoParts([{ partNumber: 1, title: '', videoUrl: '', noteLink: '', isFree: false }]);
+                setChapterName("");
+                setVideoParts([
+                  {
+                    partNumber: 1,
+                    title: "",
+                    videoUrl: "",
+                    noteLink: "",
+                    isFree: false,
+                  },
+                ]);
               }}
             >
               Reset
             </button>
-            <button 
-              onClick={handleSubmit} 
+            <button
+              onClick={handleSubmit}
               disabled={loading || !selectedSubjectId}
               className="flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-2.5 font-semibold text-primary-foreground flex-1 md:flex-none min-w-[160px] shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
             >
-              {loading ? <span className="loading loading-spinner loading-sm"></span> : <Save size={18} />}
+              {loading ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                <Save size={18} />
+              )}
               Save Course
             </button>
           </div>
         </div>
       </div>
-
     </div>
   );
-}
+};
 
 export default ManageVideos;
