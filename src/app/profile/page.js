@@ -56,7 +56,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const fetchSavedVideos = async () => {
-      if (!user) return;
+      if (!user || !user._id) return;
       try {
         const token = await auth.currentUser.getIdToken();
         const res = await axios.get(
