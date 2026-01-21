@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import CourseCard from "@/components/CourseCard";
+import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Lottie from "lottie-react";
@@ -92,14 +93,17 @@ export default function Home() {
                         .getElementById("popular-courses")
                         ?.scrollIntoView({ behavior: "smooth" })
                     }
-                    className="px-5 md:px-8 py-4 bg-primary text-primary-foreground font-bold  text-md lg:text-lg rounded-md hover:bg-primary-hover transition-all flex items-center gap-2 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1"
+                    className="px-5 md:px-8 py-4 bg-primary text-primary-foreground font-bold text-md lg:text-lg rounded-md hover:bg-primary-hover transition-all flex items-center gap-2 hover:shadow-primary/25 hover:cursor-pointer hover:-translate-y-1"
                   >
                     Explore Courses
                     <span>↓</span>
                   </button>
-                  <button className="px-8 md:px-12 py-4 bg-surface hover:bg-surface-hover text-foreground font-bold text-md lg:text-lg rounded-md border border-border transition-colors">
+                  <Link
+                    href="/free-trial"
+                    className="px-8 md:px-12 py-4 bg-surface hover:bg-surface-hover text-foreground font-bold text-md lg:text-lg rounded-md border border-border transition-colors flex items-center justify-center hover:-translate-y-1 hover:shadow-lg hover:cursor-pointer"
+                  >
                     Free Trial
-                  </button>
+                  </Link>
                 </div>
               </div>
 

@@ -7,6 +7,8 @@ import { auth } from "@/lib/firebase";
 import Swal from "sweetalert2";
 import { User, Users, Shield, ShieldOff, Search } from "lucide-react";
 
+import LoadingAnimation from "@/components/LoadingAnimation";
+
 export default function StudentsPage() {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
@@ -117,7 +119,7 @@ export default function StudentsPage() {
             {loading ? (
               <tr>
                 <td colSpan="4" className="p-6 text-center">
-                  Loading...
+                  <LoadingAnimation />
                 </td>
               </tr>
             ) : filteredUsers.length === 0 ? (

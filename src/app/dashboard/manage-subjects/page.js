@@ -15,6 +15,7 @@ import { auth } from "@/lib/firebase";
 import Swal from "sweetalert2";
 
 import SubjectEditModal from "@/components/dashboard/SubjectEditModal";
+import LoadingAnimation from "@/components/LoadingAnimation";
 
 export default function ManageSubjects() {
   const { user } = useAuth();
@@ -193,7 +194,7 @@ export default function ManageSubjects() {
                   colSpan="6"
                   className="p-12 text-center text-muted-foreground"
                 >
-                  <span className="loading loading-spinner loading-md"></span>
+                  <LoadingAnimation />
                 </td>
               </tr>
             ) : subjects.length === 0 ? (
@@ -264,7 +265,7 @@ export default function ManageSubjects() {
       <div className="md:hidden space-y-4">
         {loading ? (
           <div className="p-12 text-center text-muted-foreground">
-            <span className="loading loading-spinner loading-md"></span>
+            <LoadingAnimation />
           </div>
         ) : (
           subjects.map((s) => (

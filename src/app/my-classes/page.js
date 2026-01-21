@@ -135,8 +135,8 @@ export default function MyClasses() {
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
         <div className="py-12 md:py-20">
           <div className="container-custom">
-            <header className="mb-12 md:mb-16">
-              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+            <header className="mb-10 md:mb-16">
+              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">
                 My Classes
               </h1>
               <p className="text-muted-foreground text-lg max-w-2xl">
@@ -161,7 +161,7 @@ export default function MyClasses() {
                       <div className="flex items-center gap-4">
                         <div className="w-2 h-12 bg-primary rounded-full shadow-[0_0_15px_rgba(0,230,118,0.3)]"></div>
                         <div>
-                          <h2 className="text-3xl font-bold tracking-tight">
+                          <h2 className="text-xl md:text-3xl font-bold tracking-tight">
                             {course.title}
                           </h2>
                           <div className="flex items-center gap-2 mt-2">
@@ -187,7 +187,7 @@ export default function MyClasses() {
 
                     {/* Subjects Grid */}
                     {course.subjects && course.subjects.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
                         {course.subjects.map((subject) => (
                           <EnrolledSubjectCard
                             key={subject._id || subject.id}

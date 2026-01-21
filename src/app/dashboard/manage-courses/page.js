@@ -10,6 +10,8 @@ import Swal from "sweetalert2";
 import Link from "next/link";
 import CourseEditModal from "@/components/dashboard/CourseEditModal";
 
+import LoadingAnimation from "@/components/LoadingAnimation";
+
 export default function ManageCourses() {
   const { user } = useAuth();
   const [courses, setCourses] = useState([]);
@@ -147,7 +149,7 @@ export default function ManageCourses() {
             {loading ? (
               <tr>
                 <td colSpan="4" className="p-6 text-center">
-                  Loading…
+                  <LoadingAnimation />
                 </td>
               </tr>
             ) : (

@@ -103,12 +103,12 @@ export default function ProfilePage() {
   return (
     <AuthGuard>
       <div className="container-custom pt-12 pb-24 min-h-[80vh]">
-        <div className="max-w-4xl mx-auto my-10 space-y-8">
+        <div className="max-w-4xl mx-auto my-6 md:my-10 space-y-6 md:space-y-8 px-4 md:px-0">
           <div>
-            <h1 className="text-4xl font-bold mb-2 text-foreground">
+            <h1 className="text-2xl md:text-4xl font-bold mb-2 text-foreground">
               My Profile
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm md:text-base text-muted-foreground">
               Manage your account settings and preferences
             </p>
           </div>
@@ -135,7 +135,7 @@ export default function ProfilePage() {
                 <h2 className="text-lg md:text-xl font-bold text-foreground mt-2">
                   {user?.displayName || "User"}
                 </h2>
-                <p className="text-xs md:text-sm text-muted-foreground break-all">
+                <p className="text-xs md:text-sm text-muted-foreground break-all opacity-80">
                   {user?.email}
                 </p>
               </div>
@@ -237,10 +237,16 @@ export default function ProfilePage() {
 
               {/* Saved Videos Section */}
               <div className="bg-card rounded-3xl shadow-sm border border-border p-5 md:p-8">
-                <h3 className="text-lg md:text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-                  <Bookmark className="text-primary" size={24} />
-                  Saved Lessons
-                </h3>
+                <header className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg md:text-xl font-bold text-foreground flex items-center gap-2">
+                    <Bookmark className="text-primary" size={24} />
+                    Saved Lessons
+                  </h3>
+                  <span className="text-xs font-medium text-muted-foreground bg-muted/30 px-3 py-1 rounded-full border border-border">
+                    {savedVideos.length}{" "}
+                    {savedVideos.length === 1 ? "lesson" : "lessons"}
+                  </span>
+                </header>
 
                 {loadingSaved ? (
                   <div className="flex justify-center py-8">
@@ -256,21 +262,26 @@ export default function ProfilePage() {
                             ? `/learn/${video.subjectId.courseId}/${video.subjectId._id}?chapter=${encodeURIComponent(video.chapterName)}&part=${video._id}`
                             : "#"
                         }
-                        className="flex items-start gap-3 md:items-center md:gap-4 p-4 rounded-xl bg-surface hover:bg-muted transition-colors border border-border group"
+                        className="flex items-start gap-3 md:gap-4 p-4 rounded-2xl bg-surface/50 hover:bg-muted transition-all border border-border group"
                       >
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0 mt-1 md:mt-0">
+                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all shrink-0 mt-0.5 md:mt-0">
                           <PlayCircle size={20} className="md:w-6 md:h-6" />
                         </div>
-                        <div className="flex-1 min-w-0 space-y-1 md:space-y-0">
-                          <h4 className="font-semibold text-foreground text-sm md:text-base break-words line-clamp-2">
-                            {video.title}
-                          </h4>
-                          <p className="text-xs md:text-sm text-muted-foreground truncate">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                            <h4 className="font-bold text-foreground text-sm md:text-base truncate group-hover:text-primary transition-colors">
+                              {video.title}
+                            </h4>
+                            <span className="inline-flex sm:hidden text-[10px] font-bold px-2 py-0.5 bg-background rounded-md border border-border w-fit text-primary/80">
+                              Part {video.partNumber}
+                            </span>
+                          </div>
+                          <p className="text-xs md:text-sm text-muted-foreground line-clamp-1 opacity-70">
                             {video.subjectId?.title || "Unknown Subject"} •{" "}
                             {video.chapterName}
                           </p>
                         </div>
-                        <div className="text-[10px] md:text-xs font-bold px-2 md:px-3 py-1 bg-background rounded-full border border-border whitespace-nowrap">
+                        <div className="hidden sm:block text-[10px] md:text-xs font-bold px-3 py-1.5 bg-background rounded-lg border border-border whitespace-nowrap group-hover:bg-primary transition-all">
                           Part {video.partNumber}
                         </div>
                       </Link>

@@ -20,6 +20,8 @@ import Swal from "sweetalert2";
 import Link from "next/link";
 import VideoEditModal from "@/components/dashboard/VideoEditModal";
 
+import LoadingAnimation from "@/components/LoadingAnimation";
+
 export default function ManageVideosList() {
   const { user } = useAuth();
   const [videos, setVideos] = useState([]);
@@ -226,7 +228,7 @@ export default function ManageVideosList() {
             {loading ? (
               <tr>
                 <td colSpan="4" className="p-6 text-center">
-                  Loading videos...
+                  <LoadingAnimation />
                 </td>
               </tr>
             ) : videos.length === 0 ? (
