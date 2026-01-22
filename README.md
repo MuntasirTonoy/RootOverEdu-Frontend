@@ -24,7 +24,7 @@ Root Over Education is a modern, responsive e-learning platform dedicated to mas
 ## 🔗 Deployment
 
 - **Live Frontend**: [https://rootovereducation.vercel.app](https://rootovereducation.vercel.app)
-- **Live Backend API**: [https://root-over-backend.vercel.app](https://root-over-backend.vercel.app)
+- **Live Backend API**: [https://root-over-edu-backend.vercel.app](https://root-over-edu-backend.vercel.app)
 
 ## 🛠 Tech Stack
 
