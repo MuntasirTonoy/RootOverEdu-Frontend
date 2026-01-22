@@ -44,9 +44,7 @@ export default function Navbar() {
             <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center text-primary font-bold group-hover:bg-primary group-hover:text-white transition-all duration-300">
               <Radical size={20} />
             </div>
-            <span className="text-xl font-bold tracking-tight">
-              Root to Nahid
-            </span>
+            <span className="text-xl font-bold tracking-tight">Root Over</span>
           </Link>
 
           {/* Desktop Menu */}

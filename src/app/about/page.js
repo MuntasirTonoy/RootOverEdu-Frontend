@@ -17,10 +17,10 @@ export default function AboutPage() {
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-foreground tracking-tight">
-              About Root to Nahid
+              About Root Over Education
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Empowering students to master mathematics with clarity and
+              Empowering students to master science subjects with clarity and
               confidence.
             </p>
           </div>
@@ -38,11 +38,13 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-6">
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  <span className="font-bold text-primary">Root to Nahid</span>{" "}
-                  is an innovative EdTech platform dedicated to helping BSc
-                  Mathematics students of the National University, Bangladesh.
-                  We guide you from the fundamental roots of mathematics to
-                  advanced problem-solving with clarity and confidence.
+                  <span className="font-bold text-primary">
+                    Root Over Education
+                  </span>{" "}
+                  is an innovative EdTech platform dedicated to helping SSC,
+                  HSC, and BSc Science students. We guide you from the
+                  fundamental roots of science to advanced problem-solving with
+                  clarity and confidence.
                 </p>
 
                 <div className="grid gap-4 py-4">
@@ -62,8 +64,8 @@ export default function AboutPage() {
                       <strong className="text-foreground">
                         Concept-Based Learning:
                       </strong>{" "}
-                      Step-by-step explanations that make complex ideas easy to
-                      understand.
+                      Step-by-step explanations that make complex scientific
+                      ideas easy to understand.
                     </p>
                   </div>
                   <div className="flex gap-4 items-start">
@@ -79,8 +81,8 @@ export default function AboutPage() {
                 </div>
 
                 <div className="bg-surface p-6 rounded-md border-l-4 border-primary italic text-muted-foreground font-medium">
-                  "Learn smart. Learn strong. Learn from the root — with Root to
-                  Nahid."
+                  "Learn smart. Learn strong. Learn from the root — with Root
+                  Over Education."
                 </div>
               </div>
 
@@ -126,7 +128,7 @@ export default function AboutPage() {
                   bgColor="bg-pink-50"
                 />
                 <SocialLink
-                  href="https://facebook.com/roottonahid"
+                  href="https://facebook.com/rootovereducation"
                   icon={<Facebook className="w-6 h-6" />}
                   title="Facebook Page"
                   color="text-blue-600"
@@ -156,11 +158,11 @@ export default function AboutPage() {
                     <Youtube size={18} />
                   </div>
                   <Link
-                    href="https://www.youtube.com/@RoottoNahid"
+                    href="https://www.youtube.com/@RootOverEducation"
                     target="_blank"
                     className="text-sm font-medium break-all"
                   >
-                    www.youtube.com/@RoottoNahid
+                    www.youtube.com/@RootOverEducation
                   </Link>
                 </li>
                 <li className="flex items-center gap-3 text-muted-foreground">
@@ -182,18 +184,18 @@ export default function AboutPage() {
                     <Globe size={18} />
                   </div>
                   <Link
-                    href="https://root-to-nahid.vercel.app"
+                    href="https://rootovereducation.vercel.app"
                     target="_blank"
                     className="text-sm font-medium"
                   >
-                    root-to-nahid.vercel.app
+                    rootovereducation.vercel.app
                   </Link>
                 </li>
               </ul>
 
               <div className="mt-6 pt-6 border-t border-border">
                 <Link
-                  href="https://www.youtube.com/@RoottoNahid?sub_confirmation=1"
+                  href="https://www.youtube.com/@RootOverEducation?sub_confirmation=1"
                   target="_blank"
                   className="w-full bg-primary hover:bg-primary-hover text-primary-foreground border-none  flex justify-center items-center gap-2 py-3 rounded-md font-bold transition-all"
                 >

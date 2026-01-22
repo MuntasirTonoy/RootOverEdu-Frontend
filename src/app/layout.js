@@ -7,8 +7,9 @@ const outfit = Outfit({
 });
 
 export const metadata = {
-  title: "Root to Nahid | Master Mathematics",
-  description: "A minimal and clean platform designed to help you excel in your math journey.",
+  title: "Root Over Education | Elevate Your Science Journey",
+  description:
+    "A comprehensive learning platform for SSC, HSC, and BSc Science students, designed to help you excel in your academic path.",
 };
 
 import ThemeProvider from "@/components/ThemeProvider";
@@ -20,7 +21,9 @@ import { AuthProvider } from "@/context/AuthContext";
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${outfit.variable} antialiased transition-colors duration-300 flex flex-col min-h-screen`}>
+      <body
+        className={`${outfit.variable} antialiased transition-colors duration-300 flex flex-col min-h-screen`}
+      >
         <AuthProvider>
           <ThemeProvider
             attribute="class"
@@ -29,9 +32,7 @@ export default function RootLayout({ children }) {
             disableTransitionOnChange
           >
             <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
             <Footer />
             <Toaster position="top-center" richColors />
           </ThemeProvider>

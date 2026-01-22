@@ -8,7 +8,7 @@ export default function Footer() {
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground text-sm font-bold">
             <span className="text-white">R</span>
           </div>
-          <span className="font-bold text-foreground">Root to Nahid</span>
+          <span className="font-bold text-foreground">Root Over Education</span>
         </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
@@ -38,7 +38,7 @@ export default function Footer() {
         </div>
 
         <p className="text-sm text-muted-foreground/80">
-          © 2026 Munatasir Tonoy. All rights reserved.
+          © 2026 Root Over Education. All rights reserved.
         </p>
       </div>
     </footer>

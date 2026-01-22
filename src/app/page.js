@@ -9,6 +9,9 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import Lottie from "lottie-react";
 import heroAnimation from "../../public/hero-student.json";
 import LoadingAnimation from "@/components/LoadingAnimation";
+import { motion } from "framer-motion";
+import CountUp from "@/components/CountUp";
+import FAQ from "@/components/FAQ";
 
 export default function Home() {
   const [courses, setCourses] = useState([]);
@@ -74,19 +77,34 @@ export default function Home() {
           <div className="container-custom relative z-10">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="flex-1 max-w-2xl">
-                <h1 className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight leading-[1.1] mb-6">
-                  Master <br />
-                  Mathematics <br />
-                  <span className="text-primary">with Nahid</span>
-                </h1>
-                <p className="text-xl text-muted-foreground mb-8 max-w-lg leading-relaxed">
-                  A modern learning platform designed to elevate your math
-                  journey with clear concepts, expert support, and simplified
-                  modules. Upgrade to the full version and unlock your complete
-                  learning potential..
-                </p>
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight leading-[1.1] mb-6"
+                >
+                  Learn Smarter
+                  <br />
+                  <span className="text-primary">with Root Over Education</span>
+                </motion.h1>
 
-                <div className="flex items-center gap-4">
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="text-xl text-muted-foreground mb-8 max-w-lg leading-relaxed"
+                >
+                  A next-generation learning platform built to simplify science,
+                  strengthen core concepts, and help you achieve real academic
+                  excellence. Learn deeply with us.
+                </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  className="flex items-center gap-4"
+                >
                   <button
                     onClick={() =>
                       document
@@ -104,12 +122,29 @@ export default function Home() {
                   >
                     Free Trial
                   </Link>
-                </div>
+                </motion.div>
               </div>
 
-              <div className="flex-1 relative w-full aspect-[4/3] max-w-2xl">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: [0, -20, 0],
+                }}
+                transition={{
+                  opacity: { duration: 1.2 },
+                  scale: { duration: 1.2 },
+                  y: {
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  },
+                }}
+                className="flex-1 relative w-full aspect-[4/3] max-w-2xl"
+              >
                 <Lottie animationData={heroAnimation} loop={true} />
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -178,13 +213,15 @@ export default function Home() {
           </div>
         </section>
 
+        <FAQ />
+
         {/* Stats Section */}
         <section className="py-12 md:py-20 bg-background transition-colors duration-300">
           <div className="container-custom">
             <div className="bg-surface rounded-3xl p-8 md:p-12 border border-border grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 transition-colors duration-300">
               <div className="text-center">
                 <h3 className="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                  5k+
+                  <CountUp to={5} suffix="k+" />
                 </h3>
                 <p className="font-bold text-muted-foreground text-[10px] md:text-xs tracking-widest uppercase">
                   Students
@@ -192,7 +229,7 @@ export default function Home() {
               </div>
               <div className="text-center border-l border-border/50">
                 <h3 className="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                  48+
+                  <CountUp to={48} suffix="+" />
                 </h3>
                 <p className="font-bold text-muted-foreground text-[10px] md:text-xs tracking-widest uppercase">
                   Courses
@@ -200,7 +237,7 @@ export default function Home() {
               </div>
               <div className="text-center lg:border-l border-border/50">
                 <h3 className="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                  99%
+                  <CountUp to={99} suffix="%" />
                 </h3>
                 <p className="font-bold text-muted-foreground text-[10px] md:text-xs tracking-widest uppercase">
                   Success Rate
@@ -208,7 +245,7 @@ export default function Home() {
               </div>
               <div className="text-center border-l border-border/50">
                 <h3 className="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                  24/7
+                  <CountUp to={24} suffix="/7" />
                 </h3>
                 <p className="font-bold text-muted-foreground text-[10px] md:text-xs tracking-widest uppercase">
                   Support

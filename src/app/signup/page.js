@@ -58,10 +58,10 @@ export default function SignupPage() {
         {/* Header */}
         <div className="text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl mb-2">
-            Join RootNahid
+            Join Root Over Education
           </h1>
           <p className="text-muted-foreground text-lg">
-            Create an account to start mastering mathematics
+            Create an account to start mastering science subjects
           </p>
         </div>
 

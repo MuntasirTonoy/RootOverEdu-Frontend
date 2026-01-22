@@ -1,6 +1,6 @@
-# RootNahid - Mathematics Learning Platform
+# Root Over Education - Science Learning Platform
 
-RootNahid is a modern, responsive e-learning platform dedicated to mastering mathematics. Built with the cutting-edge **Next.js 16** and **Tailwind CSS 4**, this application provides a premium user experience for students and a robust management interface for administrators.
+Root Over Education is a modern, responsive e-learning platform dedicated to mastering science subjects for SSC, HSC, and BSc students. Built with the cutting-edge **Next.js 16** and **Tailwind CSS 4**, this application provides a premium user experience for students and a robust management interface for administrators.
 
 ## 🚀 Features
 
@@ -23,8 +23,8 @@ RootNahid is a modern, responsive e-learning platform dedicated to mastering mat
 
 ## 🔗 Deployment
 
-- **Live Frontend**: [https://roottonahid.vercel.app](https://roottonahid.vercel.app)
-- **Live Backend API**: [https://root-nahid-backend.vercel.app](https://root-nahid-backend.vercel.app)
+- **Live Frontend**: [https://rootovereducation.vercel.app](https://rootovereducation.vercel.app)
+- **Live Backend API**: [https://root-over-backend.vercel.app](https://root-over-backend.vercel.app)
 
 ## 🛠 Tech Stack
 
@@ -48,12 +48,14 @@ Follow these steps to set up the project locally.
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/MuntasirTonoy/RootNahid-FrontEnd.git
-   cd RootNahid-FrontEnd
+   git clone https://github.com/MuntasirTonoy/root-over-education.git
+   cd root-over-education
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -75,6 +77,7 @@ Follow these steps to set up the project locally.
    ```
 
 4. **Run the development server**
+
    ```bash
    npm run dev
    ```
