@@ -221,7 +221,7 @@ export default function Home() {
             <div className="bg-surface rounded-3xl p-8 md:p-12 border border-border grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 transition-colors duration-300">
               <div className="text-center">
                 <h3 className="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                  <CountUp to={5} suffix="k+" />
+                  <CountUp to={5} suffix="000" />
                 </h3>
                 <p className="font-bold text-muted-foreground text-[10px] md:text-xs tracking-widest uppercase">
                   Students
@@ -229,10 +229,10 @@ export default function Home() {
               </div>
               <div className="text-center border-l border-border/50">
                 <h3 className="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                  <CountUp to={48} suffix="+" />
+                  <CountUp to={48} suffix="00" />
                 </h3>
                 <p className="font-bold text-muted-foreground text-[10px] md:text-xs tracking-widest uppercase">
-                  Courses
+                  videos
                 </p>
               </div>
               <div className="text-center lg:border-l border-border/50">

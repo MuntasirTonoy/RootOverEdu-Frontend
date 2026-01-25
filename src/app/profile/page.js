@@ -50,7 +50,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setDisplayName(user.displayName || "");
-      setPhotoURL(user.photoURL || AVATARS[0]);
+      setPhotoURL(user.avatar || AVATARS[0]);
     }
   }, [user]);
 
@@ -114,30 +114,91 @@ export default function ProfilePage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            {/* Avatar Section */}
-            <div className="bg-card rounded-3xl border border-border h-fit p-6">
-              <div className="flex flex-col items-center text-center">
-                <div className="relative group mb-4">
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden ring-4 ring-primary ring-offset-4 ring-offset-card transition-all">
-                    <img
-                      src={photoURL || AVATARS[0]}
-                      alt="Profile"
-                      className="w-full h-full object-cover bg-surface"
-                    />
+            {/* Left Column: Avatar + Saved Videos */}
+            <div className="space-y-6">
+              {/* Avatar Section */}
+              <div className="bg-card rounded-3xl border border-border h-fit p-6">
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative group mb-4">
+                    <div
+                      className={`w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden ring-4 ${user?.role === "admin" ? "ring-yellow-500" : "ring-primary"} ring-offset-4 ring-offset-card transition-all`}
+                    >
+                      <img
+                        src={photoURL || AVATARS[0]}
+                        alt="Profile"
+                        className="w-full h-full object-cover bg-surface"
+                      />
+                    </div>
+                    <button
+                      onClick={() => setShowAvatarModal(true)}
+                      className="absolute bottom-0 right-0 rounded-full p-2 bg-background border border-border text-primary hover:bg-primary hover:text-white transition-all shadow-lg"
+                    >
+                      <Camera size={16} />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setShowAvatarModal(true)}
-                    className="absolute bottom-0 right-0 rounded-full p-2 bg-background border border-border text-primary hover:bg-primary hover:text-white transition-all shadow-lg"
-                  >
-                    <Camera size={16} />
-                  </button>
+                  <h2 className="text-lg md:text-xl font-bold text-foreground mt-2">
+                    {user?.displayName || "User"}
+                  </h2>
+                  <p className="text-xs md:text-sm text-muted-foreground break-all opacity-80">
+                    {user?.email}
+                  </p>
+                  {user?.role === "admin" && (
+                    <span className="mt-2 px-3 py-1 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 text-xs font-bold rounded-full border border-yellow-500/20 uppercase tracking-wider">
+                      Admin
+                    </span>
+                  )}
                 </div>
-                <h2 className="text-lg md:text-xl font-bold text-foreground mt-2">
-                  {user?.displayName || "User"}
-                </h2>
-                <p className="text-xs md:text-sm text-muted-foreground break-all opacity-80">
-                  {user?.email}
-                </p>
+              </div>
+
+              {/* Saved Videos Section */}
+              <div className="bg-surface rounded-3xl border border-border p-5 md:p-6">
+                <header className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <Bookmark className="text-primary" size={20} />
+                    Saved
+                  </h3>
+                  <span className="text-xs font-medium text-muted-foreground bg-muted/30 px-2 py-1 rounded-full border border-border">
+                    {savedVideos.length}
+                  </span>
+                </header>
+
+                {loadingSaved ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="animate-spin text-primary" size={24} />
+                  </div>
+                ) : savedVideos.length > 0 ? (
+                  <div className="space-y-3">
+                    {savedVideos.map((video) => (
+                      <Link
+                        key={video._id}
+                        href={
+                          video.subjectId
+                            ? `/learn/${video.subjectId.courseId}/${video.subjectId._id}?chapter=${encodeURIComponent(video.chapterName)}&part=${video._id}`
+                            : "#"
+                        }
+                        className="block p-3 rounded-xl bg-background hover:bg-muted/50 transition-all border border-border group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all shrink-0">
+                            <PlayCircle size={16} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-foreground text-sm truncate group-hover:text-primary transition-colors">
+                              {video.title}
+                            </h4>
+                            <p className="text-xs text-muted-foreground line-clamp-1 opacity-70">
+                              {video.chapterName}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-muted-foreground text-xs">
+                    <p>No saved lessons.</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -233,65 +294,6 @@ export default function ProfilePage() {
                     </button>
                   </div>
                 </form>
-              </div>
-
-              {/* Saved Videos Section */}
-              <div className="bg-surface rounded-3xl border border-border p-5 md:p-8">
-                <header className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg md:text-xl font-bold text-foreground flex items-center gap-2">
-                    <Bookmark className="text-primary" size={24} />
-                    Saved Lessons
-                  </h3>
-                  <span className="text-xs font-medium text-muted-foreground bg-muted/30 px-3 py-1 rounded-full border border-border">
-                    {savedVideos.length}{" "}
-                    {savedVideos.length === 1 ? "lesson" : "lessons"}
-                  </span>
-                </header>
-
-                {loadingSaved ? (
-                  <div className="flex justify-center py-8">
-                    <Loader2 className="animate-spin text-primary" size={32} />
-                  </div>
-                ) : savedVideos.length > 0 ? (
-                  <div className="space-y-4">
-                    {savedVideos.map((video) => (
-                      <Link
-                        key={video._id}
-                        href={
-                          video.subjectId
-                            ? `/learn/${video.subjectId.courseId}/${video.subjectId._id}?chapter=${encodeURIComponent(video.chapterName)}&part=${video._id}`
-                            : "#"
-                        }
-                        className="flex items-start gap-3 md:gap-4 p-4 rounded-2xl bg-primary/10 hover:bg-primary/20 transition-all border border-border group"
-                      >
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all shrink-0 mt-0.5 md:mt-0">
-                          <PlayCircle size={20} className="md:w-6 md:h-6" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
-                            <h4 className="font-bold text-foreground text-sm md:text-base truncate group-hover:text-primary transition-colors">
-                              {video.title}
-                            </h4>
-                            <span className="inline-flex sm:hidden text-[10px] font-bold px-2 py-0.5 bg-background rounded-md border border-border w-fit text-primary/80">
-                              Part {video.partNumber}
-                            </span>
-                          </div>
-                          <p className="text-xs md:text-sm text-foreground line-clamp-1 opacity-70">
-                            {video.subjectId?.title || "Unknown Subject"} •{" "}
-                            {video.chapterName}
-                          </p>
-                        </div>
-                        <div className="hidden sm:block text-[10px] md:text-xs font-bold px-3 py-1.5 bg-background rounded-lg border border-border whitespace-nowrap group-hover:bg-primary transition-all">
-                          Part {video.partNumber}
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-foreground text-sm">
-                    <p>No saved lessons yet.</p>
-                  </div>
-                )}
               </div>
             </div>
           </div>
