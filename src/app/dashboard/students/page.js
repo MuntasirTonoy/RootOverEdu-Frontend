@@ -132,9 +132,9 @@ export default function StudentsPage() {
               filteredUsers.map((u) => (
                 <tr key={u._id} className="hover:bg-muted/10">
                   <td className="p-4 flex gap-3 items-center">
-                    {u.photoURL ? (
+                    {u.avatar ? (
                       <img
-                        src={u.photoURL}
+                        src={u.avatar}
                         alt={u.name}
                         className="w-10 h-10 rounded-full object-cover"
                       />
@@ -196,9 +196,9 @@ export default function StudentsPage() {
               className="bg-gray-50 dark:bg-card border border-border rounded-2xl p-4 space-y-3"
             >
               <div className="flex gap-3 items-center">
-                {u.photoURL ? (
+                {u.avatar ? (
                   <img
-                    src={u.photoURL}
+                    src={u.avatar}
                     alt={u.name}
                     className="w-12 h-12 rounded-full object-cover"
                   />
