@@ -375,7 +375,7 @@ export default function CourseEditModal({
                     className="
       w-10 h-10
       flex items-center justify-center
-      rounded-full
+      rounded-md
       bg-primary text-primary-foreground
       transition-all duration-200
       hover:bg-primary-hover  

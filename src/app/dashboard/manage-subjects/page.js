@@ -174,11 +174,11 @@ export default function ManageSubjects() {
   };
 
   return (
-    <div className="space-y-6 px-4 sm:px-6">
+    <div className="p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+          <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
             <BookOpen size={24} />
           </div>
           <div>
@@ -201,7 +201,7 @@ export default function ManageSubjects() {
       {/* ================= DESKTOP TABLE ================= */}
       <div className="hidden md:block bg-card rounded-md border border-border overflow-hidden">
         <table className="w-full">
-          <thead className="bg-muted/30 border-b border-border text-xs uppercase text-muted-foreground font-semibold">
+          <thead className="bg-muted/30 border-b border-border text-xs uppercase  font-semibold">
             <tr>
               <th className="p-4 text-left w-20">Code</th>
               <th className="p-4 text-left">Subject Title</th>

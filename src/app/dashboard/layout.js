@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }) {
     <AuthGuard allowedRoles={["admin"]}>
       <div className="flex min-h-screen bg-background relative overflow-x-hidden">
         {/* Desktop Sidebar - Sticky position managed here */}
-        <div className="hidden xl:block sticky top-20 h-[calc(100vh-5rem)] shrink-0">
+        <div className="hidden xl:block sticky top-1 h-[calc(100vh-4rem)] shrink-0">
           <AppSidebar />
         </div>
 

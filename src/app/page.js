@@ -9,6 +9,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import Lottie from "lottie-react";
 import heroAnimation from "../../public/hero-student.json";
 import LoadingAnimation from "@/components/LoadingAnimation";
+import EmptyState from "@/components/EmptyState";
 import { motion } from "framer-motion";
 import CountUp from "@/components/CountUp";
 import FAQ from "@/components/FAQ";
@@ -241,8 +242,11 @@ export default function Home() {
                   </div>
                 ))
               ) : (
-                <div className="w-full text-center py-20 text-muted-foreground">
-                  No courses available at the moment.
+                <div className="w-full">
+                  <EmptyState
+                    message="No Courses Available"
+                    description="We're working on adding new courses. Please check back soon!"
+                  />
                 </div>
               )}
             </div>

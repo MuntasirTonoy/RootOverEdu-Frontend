@@ -12,6 +12,10 @@ import {
   ArrowRight,
   Globe,
   Loader2,
+  Phone,
+  Facebook,
+  Instagram,
+  Link as LinkIcon,
 } from "lucide-react";
 import Link from "next/link";
 import LoadingAnimation from "@/components/LoadingAnimation";
@@ -149,7 +153,12 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 mt-20 md:grid-cols-3 gap-8">
           {/* Main Content Card */}
           <div className="md:col-span-2 space-y-8">
-            <div className="bg-card rounded-3xl  border border-border p-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-card rounded-xl border border-border p-8"
+            >
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-foreground">
                 <span className="w-10 h-1 rounded-full bg-primary"></span>
                 Description
@@ -187,7 +196,12 @@ export default function AboutPage() {
               </h3>
               <div className="grid gap-4">
                 {contactData?.phone ? (
-                  <div className="bg-surface rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 border border-border">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-surface rounded-xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 border border-border hover:border-primary/30 transition-colors"
+                  >
                     <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-600">
                       <Phone size={24} />
                     </div>
@@ -199,10 +213,15 @@ export default function AboutPage() {
                         {contactData.phone}
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
                 ) : (
                   // Fallback
-                  <div className="bg-surface rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 border border-border">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-surface rounded-xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 border border-border hover:border-primary/30 transition-colors"
+                  >
                     <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-600">
                       <Phone size={24} />
                     </div>
@@ -214,11 +233,16 @@ export default function AboutPage() {
                         01316271902
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
 
                 {contactData?.address && (
-                  <div className="bg-surface rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 border border-border">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                    className="bg-surface rounded-xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 border border-border hover:border-primary/30 transition-colors"
+                  >
                     <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">
                       <MapPin size={24} />
                     </div>
@@ -230,13 +254,18 @@ export default function AboutPage() {
                         {contactData.address}
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
               </div>
-            </div>
+            </motion.div>
 
             {/* Links Section */}
-            <div className="bg-card rounded-3xl  border border-border p-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="bg-card rounded-xl border border-border p-8"
+            >
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-foreground">
                 <span className="w-10 h-1 rounded-full bg-primary"></span>
                 Official Links
@@ -279,12 +308,17 @@ export default function AboutPage() {
                   </>
                 )}
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* Sidebar Info */}
           <div className="space-y-6">
-            <div className="bg-card rounded-3xl border border-border sticky top-24 p-6">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-card rounded-xl border border-border sticky top-24 p-6"
+            >
               <h3 className="text-lg font-bold mb-4 text-foreground">
                 More Info
               </h3>
@@ -356,7 +390,7 @@ export default function AboutPage() {
                   Subscribe Now
                 </Link>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

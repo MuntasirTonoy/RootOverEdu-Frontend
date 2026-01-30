@@ -85,6 +85,9 @@ export default function Navbar() {
             <Link href="/" className={isActive("/")}>
               Home
             </Link>
+            <Link href="/courses" className={isActive("/courses")}>
+              Courses
+            </Link>
             <Link href="/about" className={isActive("/about")}>
               About
             </Link>
@@ -226,6 +229,13 @@ export default function Navbar() {
                     className={`px-4 py-3 rounded-xl font-medium text-lg ${getMobileActiveClasses("/")}`}
                   >
                     Home
+                  </Link>
+                  <Link
+                    href="/courses"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`px-4 py-3 rounded-xl font-medium text-lg ${getMobileActiveClasses("/courses")}`}
+                  >
+                    Courses
                   </Link>
                   <Link
                     href="/about"

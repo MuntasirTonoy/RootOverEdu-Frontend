@@ -46,7 +46,7 @@ const AppSidebar = ({ className = "", onLinkClick }) => {
     <aside
       className={`w-64 bg-background border-r border-border h-full flex flex-col ${className}`}
     >
-      <div className="p-4 space-y-2 flex-1 overflow-y-auto">
+      <div className="p-6 space-y-2 flex-1 overflow-y-auto">
         <div className="lg:hidden flex items-center justify-between mb-4 px-2">
           <span className="font-bold text-lg">Dashboard</span>
           {onLinkClick && (

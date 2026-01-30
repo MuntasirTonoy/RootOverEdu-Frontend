@@ -124,11 +124,11 @@ export default function ManageCourses() {
   };
 
   return (
-    <div className="space-y-6 px-4 sm:px-6">
+    <div className="p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+          <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
             <SquareChartGantt size={24} />
           </div>
           <div>
@@ -151,7 +151,7 @@ export default function ManageCourses() {
       {/* ================= DESKTOP TABLE ================= */}
       <div className="hidden md:block bg-card rounded-md border border-border overflow-hidden">
         <table className="w-full">
-          <thead className="bg-muted/3 text-xs uppercase">
+          <thead className="bg-muted/30 text-xs uppercase">
             <tr>
               <th className="p-4 text-left">Course</th>
               <th className="text-left">Department</th>

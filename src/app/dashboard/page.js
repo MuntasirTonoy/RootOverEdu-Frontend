@@ -81,9 +81,9 @@ const DashboardOverview = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="p-3 sm:p-6 lg:p-8 space-y-4 lg:space-y-8 max-w-[1600px] mx-auto overflow-hidden">
+      <div className="p-6 lg:p-8 space-y-6 lg:space-y-8 max-w-[1600px] mx-auto overflow-hidden">
         {/* Page Header */}
-        <div className="flex items-center gap-2 sm:gap-4 px-1 sm:px-0">
+        <div className="flex items-center gap-2 sm:gap-4">
           <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <LayoutDashboard size={20} className="sm:hidden" />
             <LayoutDashboard size={24} className="hidden sm:block" />

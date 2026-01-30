@@ -1,32 +1,42 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import CourseCard from "@/components/CourseCard";
 import LoadingAnimation from "@/components/LoadingAnimation";
 import EmptyState from "@/components/EmptyState";
-import FreeContentCard from "@/components/FreeContentCard";
+import { BookOpen } from "lucide-react";
 
-export default function FreeTrialPage() {
-  const [videos, setVideos] = useState([]);
+export default function CoursesPage() {
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFreeVideos = async () => {
+    const fetchCourses = async () => {
       try {
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/free-videos`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/courses`,
         );
-        setVideos(res.data);
+        const mappedCourses = res.data.map((course) => ({
+          id: course._id,
+          title: course.title,
+          shortDescription: `${course.department} - ${course.yearLevel}`,
+          price: 0,
+          offerPrice: 0,
+          coverImage: course.thumbnail,
+          tags: [course.yearLevel],
+          features: [],
+          subjects: course.subjects || [],
+        }));
+        setCourses(mappedCourses);
       } catch (error) {
-        console.error("Failed to fetch free videos:", error);
+        console.error("Failed to fetch courses:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFreeVideos();
+    fetchCourses();
   }, []);
 
   return (
@@ -36,33 +46,33 @@ export default function FreeTrialPage() {
           {/* Header */}
           <header className="mb-12 md:mb-16 text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-sm mb-6 animate-in fade-in slide-in-from-bottom-2">
-              <Sparkles size={16} />
-              <span>Free Content</span>
+              <BookOpen size={16} />
+              <span>All Courses</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">
-              Experience Our Free Lessons
+              Explore Our Courses
             </h1>
             <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
-              Explore a selection of our premium content completely for free.
-              Start learning today and see why students love our platform.
+              Discover comprehensive learning paths designed to help you master
+              science subjects and excel in your academic journey.
             </p>
           </header>
 
-          {/* Content Grid */}
+          {/* Courses Grid */}
           {loading ? (
             <div className="flex justify-center py-20">
               <LoadingAnimation />
             </div>
-          ) : videos.length > 0 ? (
+          ) : courses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-              {videos.map((video) => (
-                <FreeContentCard key={video._id} video={video} />
+              {courses.map((course) => (
+                <CourseCard key={course.id} course={course} />
               ))}
             </div>
           ) : (
             <EmptyState
-              message="No Free Videos Available"
-              description="Check back soon for free trial content. In the meantime, explore our courses!"
+              message="No Courses Available"
+              description="We're working on adding new courses. Please check back soon!"
             />
           )}
         </div>

@@ -207,11 +207,11 @@ export default function ManageVideosList() {
   };
 
   return (
-    <div className="space-y-8 bg-background min-h-screen">
+    <div className="p-6 lg:p-8 space-y-6 bg-background min-h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+          <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
             <Video size={24} />
           </div>
           <div>
@@ -239,7 +239,7 @@ export default function ManageVideosList() {
       {/* ================= DESKTOP TABLE ================= */}
       <div className="hidden md:block bg-card rounded-md border border-border overflow-hidden">
         <table className="w-full">
-          <thead className="bg-muted/30 text-xs uppercase text-muted-foreground font-semibold border-b border-border">
+          <thead className="bg-muted/30 text-xs uppercase font-semibold border-b border-border">
             <tr>
               <th className="p-4 text-left">Video</th>
               <th className="text-left font-semibold">Subject</th>
