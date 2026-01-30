@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash, Edit, X, SquareChartGantt } from "lucide-react";
+import { Plus, Trash, Edit, X, SquareChartGantt, Loader2 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { auth } from "@/lib/firebase";
@@ -11,6 +11,7 @@ import Link from "next/link";
 import CourseEditModal from "@/components/dashboard/CourseEditModal";
 
 import LoadingAnimation from "@/components/LoadingAnimation";
+import EmptyState from "@/components/EmptyState";
 
 export default function ManageCourses() {
   const { user } = useAuth();
@@ -19,6 +20,8 @@ export default function ManageCourses() {
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentCourse, setCurrentCourse] = useState(null);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -65,6 +68,7 @@ export default function ManageCourses() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setModalLoading(true);
     const token = await auth.currentUser.getIdToken();
 
     try {
@@ -87,6 +91,8 @@ export default function ManageCourses() {
       fetchCourses();
     } catch {
       Swal.fire("Error", "Something went wrong", "error");
+    } finally {
+      setModalLoading(false);
     }
   };
 
@@ -100,13 +106,21 @@ export default function ManageCourses() {
 
     if (!res.isConfirmed) return;
 
-    const token = await auth.currentUser.getIdToken();
-    await axios.delete(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/admin/course/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
-    fetchCourses();
-    Swal.fire("Deleted", "Course removed", "success");
+    try {
+      setDeletingId(id);
+      const token = await auth.currentUser.getIdToken();
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/course/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      fetchCourses();
+      Swal.fire("Deleted", "Course removed", "success");
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "Failed to delete course", "error");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -152,6 +166,15 @@ export default function ManageCourses() {
                   <LoadingAnimation />
                 </td>
               </tr>
+            ) : courses.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="p-6 text-center">
+                  <EmptyState
+                    message="No Courses Found"
+                    description="Create your first course to get started."
+                  />
+                </td>
+              </tr>
             ) : (
               courses.map((c) => (
                 <tr key={c._id} className="hover:bg-muted/10">
@@ -173,9 +196,14 @@ export default function ManageCourses() {
                     </button>
                     <button
                       onClick={() => handleDelete(c._id)}
-                      className="text-red-500"
+                      disabled={deletingId === c._id}
+                      className="text-red-500 disabled:opacity-50"
                     >
-                      <Trash size={18} />
+                      {deletingId === c._id ? (
+                        <Loader2 className="animate-spin w-4 h-4" />
+                      ) : (
+                        <Trash size={18} />
+                      )}
                     </button>
                   </td>
                 </tr>
@@ -187,39 +215,53 @@ export default function ManageCourses() {
 
       {/* ================= MOBILE CARDS ================= */}
       <div className="md:hidden space-y-4">
-        {courses.map((c) => (
-          <div
-            key={c._id}
-            className="bg-gray-50 dark:bg-card rounded-2xl p-4 space-y-3"
-          >
-            <div className="flex gap-3 items-center">
-              <img
-                src={c.thumbnail}
-                className="w-14 h-14 rounded-md object-cover"
-              />
-              <div>
-                <h3 className="font-bold">{c.title}</h3>
-                <p className="text-sm text-muted-foreground">{c.department}</p>
-                <p className="text-sm">{c.yearLevel}</p>
+        {courses.length === 0 && !loading ? (
+          <EmptyState
+            message="No Courses Found"
+            description="Create your first course to get started."
+          />
+        ) : (
+          courses.map((c) => (
+            <div
+              key={c._id}
+              className="bg-gray-50 dark:bg-card rounded-2xl p-4 space-y-3"
+            >
+              <div className="flex gap-3 items-center">
+                <img
+                  src={c.thumbnail}
+                  className="w-14 h-14 rounded-md object-cover"
+                />
+                <div>
+                  <h3 className="font-bold">{c.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {c.department}
+                  </p>
+                  <p className="text-sm">{c.yearLevel}</p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => openModal(c)}
+                  className="flex-1 py-2 rounded-md bg-blue-50 text-blue-600 font-medium"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(c._id)}
+                  disabled={deletingId === c._id}
+                  className="flex-1 py-2 rounded-md bg-red-50 text-red-600 font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {deletingId === c._id ? (
+                    <Loader2 className="animate-spin w-4 h-4" />
+                  ) : (
+                    <>Delete</>
+                  )}
+                </button>
               </div>
             </div>
-
-            <div className="flex gap-3 pt-2">
-              <button
-                onClick={() => openModal(c)}
-                className="flex-1 py-2 rounded-md bg-blue-50 text-blue-600 font-medium"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(c._id)}
-                className="flex-1 py-2 rounded-md bg-red-50 text-red-600 font-medium"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* ================= MODAL ================= */}
@@ -230,6 +272,7 @@ export default function ManageCourses() {
         formData={formData}
         setFormData={setFormData}
         onSubmit={handleSubmit}
+        loading={modalLoading}
       />
     </div>
   );

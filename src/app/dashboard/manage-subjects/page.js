@@ -8,6 +8,7 @@ import {
   BookOpen,
   Layers,
   GraduationCap,
+  Loader2,
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
@@ -16,6 +17,8 @@ import Swal from "sweetalert2";
 
 import SubjectEditModal from "@/components/dashboard/SubjectEditModal";
 import LoadingAnimation from "@/components/LoadingAnimation";
+import Pagination from "@/components/dashboard/Pagination";
+import EmptyState from "@/components/EmptyState";
 
 export default function ManageSubjects() {
   const { user } = useAuth();
@@ -23,9 +26,14 @@ export default function ManageSubjects() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [currentSubject, setCurrentSubject] = useState(null); // For editing
   const [formData, setFormData] = useState({
     title: "",
@@ -40,16 +48,28 @@ export default function ManageSubjects() {
   // Fetch initial data
   const fetchData = async () => {
     try {
+      setLoading(true);
       const token = await auth.currentUser.getIdToken();
       const [subjectsRes, coursesRes] = await Promise.all([
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects?page=${currentPage}&limit=10`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/courses`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
-      setSubjects(subjectsRes.data);
+
+      // Handle Paginated Response
+      if (subjectsRes.data.pagination) {
+        setSubjects(subjectsRes.data.data);
+        setTotalPages(subjectsRes.data.pagination.pages);
+      } else {
+        setSubjects(subjectsRes.data);
+      }
+
       setCourses(coursesRes.data);
     } catch (e) {
       console.error(e);
@@ -61,7 +81,7 @@ export default function ManageSubjects() {
 
   useEffect(() => {
     if (user) fetchData();
-  }, [user]);
+  }, [user, currentPage]);
 
   // Handlers
   const openModal = (subject = null) => {
@@ -138,6 +158,7 @@ export default function ManageSubjects() {
     if (!res.isConfirmed) return;
 
     try {
+      setDeletingId(id);
       const token = await auth.currentUser.getIdToken();
       await axios.delete(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subject/${id}`,
@@ -147,6 +168,8 @@ export default function ManageSubjects() {
       Swal.fire("Deleted", "Subject removed", "success");
     } catch (error) {
       Swal.fire("Error", "Failed to delete subject", "error");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -203,7 +226,10 @@ export default function ManageSubjects() {
                   colSpan="6"
                   className="p-12 text-center text-muted-foreground"
                 >
-                  No subjects found.
+                  <EmptyState
+                    message="No Subjects Found"
+                    description="Start by adding a new subject to your curriculum."
+                  />
                 </td>
               </tr>
             ) : (
@@ -248,10 +274,15 @@ export default function ManageSubjects() {
                     </button>
                     <button
                       onClick={() => handleDelete(s._id)}
-                      className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                      disabled={deletingId === s._id}
+                      className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
                       title="Delete"
                     >
-                      <Trash size={16} />
+                      {deletingId === s._id ? (
+                        <Loader2 className="animate-spin w-4 h-4" />
+                      ) : (
+                        <Trash size={16} />
+                      )}
                     </button>
                   </td>
                 </tr>
@@ -267,6 +298,11 @@ export default function ManageSubjects() {
           <div className="p-12 text-center text-muted-foreground">
             <LoadingAnimation />
           </div>
+        ) : subjects.length === 0 ? (
+          <EmptyState
+            message="No Subjects Found"
+            description="Start by adding a new subject to your curriculum."
+          />
         ) : (
           subjects.map((s) => (
             <div
@@ -312,15 +348,27 @@ export default function ManageSubjects() {
                 </button>
                 <button
                   onClick={() => handleDelete(s._id)}
-                  className="flex-1 py-2.5 rounded-lg bg-red-50 text-red-600 font-bold text-sm hover:bg-red-100 transition-colors"
+                  disabled={deletingId === s._id}
+                  className="flex-1 py-2.5 rounded-lg bg-red-50 text-red-600 font-bold text-sm hover:bg-red-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  Delete
+                  {deletingId === s._id ? (
+                    <Loader2 className="animate-spin w-4 h-4" />
+                  ) : (
+                    <>Delete</>
+                  )}
                 </button>
               </div>
             </div>
           ))
         )}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        isLoading={loading}
+      />
 
       {/* ================= MODAL ================= */}
       <SubjectEditModal

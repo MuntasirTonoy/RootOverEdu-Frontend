@@ -9,22 +9,48 @@ import { User, Users, Shield, ShieldOff, Search } from "lucide-react";
 
 import LoadingAnimation from "@/components/LoadingAnimation";
 
+import Pagination from "@/components/dashboard/Pagination";
+import EmptyState from "@/components/EmptyState";
+
 export default function StudentsPage() {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Debounce search
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const token = await auth.currentUser.getIdToken();
+      // Use debouncedSearch for fetching
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users?page=${currentPage}&limit=10&search=${debouncedSearch}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-      setUsers(response.data);
+
+      // Handle response
+      if (response.data.pagination) {
+        setUsers(response.data.data);
+        setTotalPages(response.data.pagination.pages);
+      } else {
+        setUsers(response.data);
+      }
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -36,7 +62,7 @@ export default function StudentsPage() {
     if (user) {
       fetchUsers();
     }
-  }, [user]);
+  }, [user, currentPage, debouncedSearch]);
 
   const toggleRole = async (userId, currentRole) => {
     const newRole = currentRole === "admin" ? "user" : "admin";
@@ -68,12 +94,6 @@ export default function StudentsPage() {
       }
     });
   };
-
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email?.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
 
   return (
     <div className="space-y-6 px-4 sm:px-6">
@@ -122,14 +142,17 @@ export default function StudentsPage() {
                   <LoadingAnimation />
                 </td>
               </tr>
-            ) : filteredUsers.length === 0 ? (
+            ) : users.length === 0 ? (
               <tr>
                 <td colSpan="4" className="p-6 text-center">
-                  No users found matching your search.
+                  <EmptyState
+                    message="No Students Found"
+                    description="Try adjusting your search filters."
+                  />
                 </td>
               </tr>
             ) : (
-              filteredUsers.map((u) => (
+              users.map((u) => (
                 <tr key={u._id} className="hover:bg-muted/10">
                   <td className="p-4 flex gap-3 items-center">
                     {u.avatar ? (
@@ -185,12 +208,13 @@ export default function StudentsPage() {
 
       {/* ================= MOBILE CARDS ================= */}
       <div className="md:hidden space-y-4">
-        {filteredUsers.length === 0 && !loading ? (
-          <div className="text-center p-6 text-muted-foreground">
-            No users found matching your search.
-          </div>
+        {users.length === 0 && !loading ? (
+          <EmptyState
+            message="No Students Found"
+            description="Try adjusting your search filters."
+          />
         ) : (
-          filteredUsers.map((u) => (
+          users.map((u) => (
             <div
               key={u._id}
               className="bg-gray-50 dark:bg-card border border-border rounded-2xl p-4 space-y-3"
@@ -239,6 +263,13 @@ export default function StudentsPage() {
           ))
         )}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        isLoading={loading}
+      />
     </div>
   );
 }

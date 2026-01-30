@@ -24,6 +24,7 @@ import {
 } from "recharts";
 
 import LoadingAnimation from "@/components/LoadingAnimation";
+import SiteConfigEditor from "@/components/dashboard/SiteConfigEditor";
 
 const DashboardOverview = () => {
   const { user } = useAuth();
@@ -218,6 +219,9 @@ const DashboardOverview = () => {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Site Content Editor */}
+      <SiteConfigEditor />
     </div>
   );
 };

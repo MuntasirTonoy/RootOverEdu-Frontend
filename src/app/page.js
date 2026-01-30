@@ -16,8 +16,11 @@ import FAQ from "@/components/FAQ";
 export default function Home() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [bannerData, setBannerData] = useState(null);
   const scrollContainerRef = useRef(null);
   const [canScroll, setCanScroll] = useState(false);
+
+  // ... (checkScroll and scroll functions remain same, omitted for brevity if I could, but I'll validly retain structure if needed or just insert logic)
 
   const checkScroll = () => {
     if (scrollContainerRef.current) {
@@ -41,32 +44,51 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/courses`,
-        );
-        // Map backend data to frontend structure
-        const mappedCourses = response.data.map((course) => ({
-          id: course._id,
-          title: course.title,
-          shortDescription: `${course.department} - ${course.yearLevel}`,
-          price: 0, // Backend doesn't provide this yet
-          offerPrice: 0,
-          coverImage: course.thumbnail,
-          tags: [course.yearLevel],
-          features: [], // Backend doesn't provide this yet
-          subjects: course.subjects || [],
-        }));
-        setCourses(mappedCourses);
+        const [coursesRes, bannerRes] = await Promise.allSettled([
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/courses`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/config/banner`),
+        ]);
+
+        // Handle Courses
+        if (coursesRes.status === "fulfilled") {
+          const mappedCourses = coursesRes.value.data.map((course) => ({
+            id: course._id,
+            title: course.title,
+            shortDescription: `${course.department} - ${course.yearLevel}`,
+            price: 0,
+            offerPrice: 0,
+            coverImage: course.thumbnail,
+            tags: [course.yearLevel],
+            features: [],
+            subjects: course.subjects || [],
+          }));
+          setCourses(mappedCourses);
+        }
+
+        // Handle Banner
+        if (
+          bannerRes.status === "fulfilled" &&
+          bannerRes.value.data &&
+          Object.keys(bannerRes.value.data).length > 0
+        ) {
+          setBannerData(bannerRes.value.data);
+        } else {
+          setBannerData({
+            title: `Learn Smarter<br/><span className="text-primary">with Root Over Education</span>`,
+            subtitle:
+              "A next-generation learning platform built to simplify science, strengthen core concepts, and help you achieve real academic excellence. Learn deeply with us.",
+          });
+        }
       } catch (error) {
-        console.error("Failed to fetch courses:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCourses();
+    fetchData();
   }, []);
 
   return (
@@ -83,20 +105,34 @@ export default function Home() {
                   transition={{ duration: 0.5 }}
                   className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight leading-[1.1] mb-6"
                 >
-                  Learn Smarter
-                  <br />
-                  <span className="text-primary">with Root Over Education</span>
+                  {bannerData?.title ? (
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: bannerData.title.replace(
+                          /className="/g,
+                          'class="',
+                        ), // Simple fix if user types className
+                      }}
+                    />
+                  ) : (
+                    <>
+                      Learn Smarter
+                      <br />
+                      <span className="text-primary">
+                        with Root Over Education
+                      </span>
+                    </>
+                  )}
                 </motion.h1>
 
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
-                  className="text-xl text-muted-foreground mb-8 max-w-lg leading-relaxed"
+                  className="text-xl text-muted-foreground mb-8 max-w-lg leading-relaxed whitespace-pre-wrap"
                 >
-                  A next-generation learning platform built to simplify science,
-                  strengthen core concepts, and help you achieve real academic
-                  excellence. Learn deeply with us.
+                  {bannerData?.subtitle ||
+                    "A next-generation learning platform built to simplify science, strengthen core concepts, and help you achieve real academic excellence. Learn deeply with us."}
                 </motion.p>
 
                 <motion.div

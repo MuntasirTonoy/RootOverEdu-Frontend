@@ -1,5 +1,6 @@
 "use client";
 import { use, useEffect, useState } from "react";
+import LoadingAnimation from "@/components/LoadingAnimation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
@@ -95,7 +96,7 @@ function CheckoutContent({ searchParams }) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading checkout...
+        <LoadingAnimation />
       </div>
     );
   }

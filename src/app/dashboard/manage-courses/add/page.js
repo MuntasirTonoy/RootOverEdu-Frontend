@@ -116,12 +116,20 @@ const AddCourse = () => {
       try {
         const token = await auth.currentUser.getIdToken();
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects?limit=1000`, // Fetch all for dropdowns
           {
             headers: { Authorization: `Bearer ${token}` },
           },
         );
-        setAvailableSubjects(res.data);
+
+        // Handle paginated response
+        if (res.data.data) {
+          setAvailableSubjects(res.data.data);
+        } else if (Array.isArray(res.data)) {
+          setAvailableSubjects(res.data);
+        } else {
+          setAvailableSubjects([]);
+        }
       } catch (error) {
         console.error("Error fetching subjects:", error);
         Swal.fire("Error", "Failed to load subjects", "error");

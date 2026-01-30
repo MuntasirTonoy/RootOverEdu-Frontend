@@ -11,6 +11,7 @@ import {
   X,
   Save,
   MonitorPlay,
+  Loader2,
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
@@ -21,39 +22,59 @@ import VideoEditModal from "@/components/dashboard/VideoEditModal";
 
 import LoadingAnimation from "@/components/LoadingAnimation";
 
+import Pagination from "@/components/dashboard/Pagination";
+import EmptyState from "@/components/EmptyState";
+
 export default function ManageVideosList() {
   const { user } = useAuth();
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   // Edit Modal State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState(null);
   const [updateLoading, setUpdateLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const [availableSubjects, setAvailableSubjects] = useState([]);
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const token = await auth.currentUser.getIdToken();
       const header = { headers: { Authorization: `Bearer ${token}` } };
 
       const [videosRes, subjectsRes] = await Promise.all([
         axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/videos`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/videos?page=${currentPage}&limit=10`,
           header,
         ),
+        // Fetch all subjects for the dropdowns
         axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects?limit=1000`,
           header,
         ),
       ]);
 
-      console.log("Videos fetched:", videosRes.data);
-      console.log("Subjects fetched:", subjectsRes.data);
+      // Handle Paginated Response
+      if (videosRes.data.pagination) {
+        setVideos(videosRes.data.data);
+        setTotalPages(videosRes.data.pagination.pages);
+      } else {
+        // Fallback if API hasn't updated yet or error
+        setVideos(videosRes.data);
+      }
 
-      setVideos(videosRes.data);
-      setAvailableSubjects(subjectsRes.data);
+      // Handle Subjects (Check if paginated or array)
+      if (subjectsRes.data.data) {
+        setAvailableSubjects(subjectsRes.data.data);
+      } else {
+        setAvailableSubjects(subjectsRes.data);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       Swal.fire({
@@ -73,7 +94,7 @@ export default function ManageVideosList() {
     if (user) {
       fetchData();
     }
-  }, [user]);
+  }, [user, currentPage]);
 
   const handleDelete = async (id) => {
     Swal.fire({
@@ -87,6 +108,7 @@ export default function ManageVideosList() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+          setDeletingId(id);
           const token = await auth.currentUser.getIdToken();
           await axios.delete(
             `${process.env.NEXT_PUBLIC_API_URL}/api/admin/video/${id}`,
@@ -99,6 +121,8 @@ export default function ManageVideosList() {
         } catch (error) {
           console.error("Error deleting video:", error);
           Swal.fire("Error", "Failed to delete video", "error");
+        } finally {
+          setDeletingId(null);
         }
       }
     });
@@ -233,7 +257,10 @@ export default function ManageVideosList() {
             ) : videos.length === 0 ? (
               <tr>
                 <td colSpan="4" className="p-6 text-center">
-                  No videos found.
+                  <EmptyState
+                    message="No Videos Found"
+                    description="Get started by uploading your first video content."
+                  />
                 </td>
               </tr>
             ) : (
@@ -299,10 +326,15 @@ export default function ManageVideosList() {
                       </button>
                       <button
                         onClick={() => handleDelete(video._id)}
-                        className="p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors"
+                        disabled={deletingId === video._id}
+                        className="p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors disabled:opacity-50"
                         title="Delete Video"
                       >
-                        <Trash size={18} />
+                        {deletingId === video._id ? (
+                          <Loader2 className="animate-spin w-4 h-4" />
+                        ) : (
+                          <Trash size={18} />
+                        )}
                       </button>
                     </div>
                   </td>
@@ -315,80 +347,102 @@ export default function ManageVideosList() {
 
       {/* ================= MOBILE CARDS ================= */}
       <div className="md:hidden space-y-4">
-        {videos.map((video) => (
-          <div key={video._id} className="bg-surface rounded-2xl p-4 space-y-3">
-            {(() => {
-              const sub = video.subjectId;
-              const sId = sub?._id || sub;
-              const cId = sub?.courseId?._id || sub?.courseId;
-              const chapter = video.chapterName?.trim() || "Untitled";
+        {videos.length === 0 && !loading ? (
+          <EmptyState
+            message="No Videos Found"
+            description="Get started by uploading your first video content."
+          />
+        ) : (
+          videos.map((video) => (
+            <div
+              key={video._id}
+              className="bg-surface rounded-2xl p-4 space-y-3"
+            >
+              {(() => {
+                const sub = video.subjectId;
+                const sId = sub?._id || sub;
+                const cId = sub?.courseId?._id || sub?.courseId;
+                const chapter = video.chapterName?.trim() || "Untitled";
 
-              return (
-                <Link
-                  href={`/learn/${cId}/${sId}?chapter=${encodeURIComponent(chapter)}&part=${video._id}`}
-                  className="flex gap-3 items-center hover:bg-muted/10 transition-colors p-2 -mx-2 rounded-lg group"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-red-100/80 text-red-600 flex items-center justify-center shrink-0 border border-red-200/50 transition-transform group-hover:scale-105">
-                    <PlayCircle size={24} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-sm text-foreground line-clamp-1 leading-tight mb-1">
-                      {video.title}
-                    </h3>
-                    <p className="text-[10px] text-muted-foreground truncate font-medium">
-                      {video.subjectId?.title || "Unknown"} •{" "}
-                      {video.chapterName}
-                    </p>
-                  </div>
-                </Link>
-              );
-            })()}
+                return (
+                  <Link
+                    href={`/learn/${cId}/${sId}?chapter=${encodeURIComponent(chapter)}&part=${video._id}`}
+                    className="flex gap-3 items-center hover:bg-muted/10 transition-colors p-2 -mx-2 rounded-lg group"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-red-100/80 text-red-600 flex items-center justify-center shrink-0 border border-red-200/50 transition-transform group-hover:scale-105">
+                      <PlayCircle size={24} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-sm text-foreground line-clamp-1 leading-tight mb-1">
+                        {video.title}
+                      </h3>
+                      <p className="text-[10px] text-muted-foreground truncate font-medium">
+                        {video.subjectId?.title || "Unknown"} •{" "}
+                        {video.chapterName}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })()}
 
-            <div className="flex flex-wrap gap-2 py-1">
-              <span className="text-[10px] font-bold tracking-wider uppercase bg-primary/10 text-primary px-2 py-1 rounded-md">
-                Part {video.partNumber}
-              </span>
-              {video.noteLink && (
+              <div className="flex flex-wrap gap-2 py-1">
+                <span className="text-[10px] font-bold tracking-wider uppercase bg-primary/10 text-primary px-2 py-1 rounded-md">
+                  Part {video.partNumber}
+                </span>
+                {video.noteLink && (
+                  <a
+                    href={video.noteLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-1 rounded-md border border-emerald-100"
+                  >
+                    <FileText size={10} /> Notes
+                  </a>
+                )}
+              </div>
+
+              <div className="flex justify-between items-center pt-3 border-t border-border/50">
                 <a
-                  href={video.noteLink}
+                  href={getWatchUrl(video.videoUrl)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-1 rounded-md border border-emerald-100"
+                  className="p-2 hover:bg-primary/10 text-primary rounded-lg transition-colors"
+                  title="View Video Source"
                 >
-                  <FileText size={10} /> Notes
+                  <ExternalLink size={20} />
                 </a>
-              )}
-            </div>
 
-            <div className="flex justify-between items-center pt-3 border-t border-border/50">
-              <a
-                href={getWatchUrl(video.videoUrl)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 hover:bg-primary/10 text-primary rounded-lg transition-colors"
-                title="View Video Source"
-              >
-                <ExternalLink size={20} />
-              </a>
-
-              <div className="flex gap-2 items-center">
-                <button
-                  onClick={() => handleEditClick(video)}
-                  className="p-2 bg-blue-50 text-blue-500 rounded-md"
-                >
-                  <Edit size={16} />
-                </button>
-                <button
-                  onClick={() => handleDelete(video._id)}
-                  className="p-2 bg-red-50 text-red-500 rounded-md"
-                >
-                  <Trash size={16} />
-                </button>
+                <div className="flex gap-2 items-center">
+                  <button
+                    onClick={() => handleEditClick(video)}
+                    className="p-2 bg-blue-50 text-blue-500 rounded-md"
+                  >
+                    <Edit size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(video._id)}
+                    disabled={deletingId === video._id}
+                    className="p-2 bg-red-50 text-red-500 rounded-md disabled:opacity-50"
+                  >
+                    {deletingId === video._id ? (
+                      <Loader2 className="animate-spin w-4 h-4" />
+                    ) : (
+                      <Trash size={16} />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        isLoading={loading}
+      />
 
       {/* Edit Modal */}
       <VideoEditModal

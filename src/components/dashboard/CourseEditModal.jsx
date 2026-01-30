@@ -7,6 +7,7 @@ import {
   Calendar,
   Plus,
   Trash,
+  Loader2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -20,6 +21,7 @@ export default function CourseEditModal({
   formData,
   setFormData,
   onSubmit,
+  loading,
 }) {
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [loadingSubjects, setLoadingSubjects] = useState(false);
@@ -437,9 +439,14 @@ export default function CourseEditModal({
               </button>
               <button
                 type="submit"
-                className="px-8 py-2 rounded-md text-sm font-bold bg-primary text-primary-foreground hover:brightness-110 shadow-lg shadow-primary/20 flex items-center gap-2 transition-all"
+                disabled={loading}
+                className="px-8 py-2 rounded-md text-sm font-bold bg-primary text-primary-foreground hover:brightness-110 shadow-lg shadow-primary/20 flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Save size={16} />
+                {loading ? (
+                  <Loader2 className="animate-spin w-4 h-4" />
+                ) : (
+                  <Save size={16} />
+                )}
                 {isEditing ? "Update Course" : "Create Course"}
               </button>
             </div>

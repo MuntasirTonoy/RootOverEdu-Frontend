@@ -1,5 +1,6 @@
 "use client";
 import { use, useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import LessonSidebar from "@/components/LessonSidebar";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -346,8 +347,45 @@ function LearnPageContent({ courseId, subjectId }) {
             </div>
           </main>
         </div>
+
         {/* Mobile Sidebar */}
-        {/* ... (keep as is) ... */}
+        <AnimatePresence>
+          {isSidebarOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 lg:hidden"
+            >
+              <div
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={() => setIsSidebarOpen(false)}
+              />
+              <motion.div
+                initial={{ x: "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="fixed inset-y-0 left-0 w-80 bg-background shadow-2xl z-50 overflow-hidden"
+              >
+                <div className="h-full flex flex-col">
+                  <div className="flex-1 overflow-y-auto">
+                    <LessonSidebar
+                      chapters={chapters}
+                      currentChapterId={chapterId}
+                      currentPartId={partId}
+                      onSelect={(cid, pid) => {
+                        handleLessonSelect(cid, pid);
+                        setIsSidebarOpen(false);
+                      }}
+                      onClose={() => setIsSidebarOpen(false)} // Pass onClose prop
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </AuthGuard>
   );

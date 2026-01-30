@@ -5,6 +5,8 @@ import AppSidebar from "@/components/AppSidebar";
 import { Menu } from "lucide-react";
 import AuthGuard from "@/components/AuthGuard";
 
+import { AnimatePresence, motion } from "framer-motion";
+
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
@@ -17,17 +19,30 @@ export default function DashboardLayout({ children }) {
         </div>
 
         {/* Mobile Sidebar Overlay */}
-        {isSidebarOpen && (
-          <div className="fixed inset-0 z-50 xl:hidden">
-            <div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={() => setSidebarOpen(false)}
-            />
-            <div className="fixed inset-y-0 left-0 w-64 bg-background animate-in slide-in-from-left duration-200 border-r border-border">
-              <AppSidebar onLinkClick={() => setSidebarOpen(false)} />
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {isSidebarOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 xl:hidden"
+            >
+              <div
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={() => setSidebarOpen(false)}
+              />
+              <motion.div
+                initial={{ x: "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="fixed inset-y-0 left-0 w-64 bg-background border-r border-border h-full"
+              >
+                <AppSidebar onLinkClick={() => setSidebarOpen(false)} />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Main Content */}
         <main className="flex-1 bg-background min-h-[calc(100vh-5rem)] flex flex-col">

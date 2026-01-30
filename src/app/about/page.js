@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Mail,
   MapPin,
@@ -8,8 +12,46 @@ import {
   Globe,
 } from "lucide-react";
 import Link from "next/link";
+import LoadingAnimation from "@/components/LoadingAnimation";
 
 export default function AboutPage() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/config/about`,
+        );
+        if (res.data && Object.keys(res.data).length > 0) {
+          setData(res.data);
+        } else {
+          // Fallback default
+          setData({
+            title: "About Root Over Education",
+            description:
+              "Root Over Education is an innovative EdTech platform dedicated to helping SSC, HSC, and BSc Science students. We guide you from the fundamental roots of science to advanced problem-solving with clarity and confidence.",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching about content:", error);
+        setData({
+          title: "About Root Over Education",
+          description:
+            "Root Over Education is an innovative EdTech platform dedicated to helping SSC, HSC, and BSc Science students. We guide you from the fundamental roots of science to advanced problem-solving with clarity and confidence.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchContent();
+  }, []);
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
+
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Hero Section */}
@@ -17,7 +59,7 @@ export default function AboutPage() {
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-foreground tracking-tight">
-              About Root Over Education
+              {data?.title || "About Root Over Education"}
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
               Empowering students to master science subjects with clarity and
@@ -37,15 +79,10 @@ export default function AboutPage() {
                 Description
               </h2>
               <div className="space-y-6">
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  <span className="font-bold text-primary">
-                    Root Over Education
-                  </span>{" "}
-                  is an innovative EdTech platform dedicated to helping SSC,
-                  HSC, and BSc Science students. We guide you from the
-                  fundamental roots of science to advanced problem-solving with
-                  clarity and confidence.
-                </p>
+                <div
+                  className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap"
+                  dangerouslySetInnerHTML={{ __html: data?.description }}
+                />
 
                 <div className="grid gap-4 py-4">
                   <div className="flex gap-4 items-start">
@@ -184,11 +221,11 @@ export default function AboutPage() {
                     <Globe size={18} />
                   </div>
                   <Link
-                    href="https://rootovereducation.vercel.app"
+                    href="https://rootover.vercel.app"
                     target="_blank"
                     className="text-sm font-medium"
                   >
-                    rootovereducation.vercel.app
+                    rootover.vercel.app
                   </Link>
                 </li>
               </ul>

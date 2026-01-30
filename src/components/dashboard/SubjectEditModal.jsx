@@ -7,6 +7,7 @@ import {
   GraduationCap,
   DollarSign,
   Tag,
+  Loader2,
 } from "lucide-react";
 
 export default function SubjectEditModal({
@@ -252,7 +253,7 @@ export default function SubjectEditModal({
             className="px-6 py-2 rounded-md text-sm font-bold bg-primary text-primary-foreground hover:brightness-110 shadow-lg shadow-primary/20 flex items-center gap-2 transition-all disabled:opacity-50"
           >
             {loading ? (
-              <span className="loading loading-spinner loading-xs"></span>
+              <Loader2 className="animate-spin w-4 h-4" />
             ) : (
               <Save size={16} />
             )}

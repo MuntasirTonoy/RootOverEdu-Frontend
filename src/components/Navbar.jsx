@@ -6,6 +6,7 @@ import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -96,7 +97,7 @@ export default function Navbar() {
                     <div className="space-y-1">
                       {user?.role === "admin" && (
                         <Link
-                          href="/dashboard/manage-courses"
+                          href="/dashboard"
                           onClick={() => setIsProfileOpen(false)}
                           className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${pathname.startsWith("/dashboard") ? "bg-primary/10 text-primary" : "hover:bg-surface-hover"}`}
                         >
@@ -141,6 +142,7 @@ export default function Navbar() {
             )}
           </div>
 
+          {/* Mobile Menu Toggle - Hidden on Learn/Video pages */}
           {/* Mobile Menu Toggle */}
           <div className="md:hidden flex items-center gap-4">
             <ThemeToggle />
@@ -155,117 +157,130 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <div className="fixed inset-y-0 right-0 w-full max-w-xs bg-background border-l border-border p-6 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-            <div className="flex items-center justify-between mb-8">
-              <span className="text-xl font-bold">Menu</span>
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto space-y-6">
-              <div className="flex flex-col space-y-2">
-                <Link
-                  href="/"
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] md:hidden"
+          >
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 right-0 w-full max-w-xs bg-background border-l border-border p-6 shadow-2xl flex flex-col"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <span className="text-xl font-bold">Menu</span>
+                <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`px-4 py-3 rounded-xl font-medium text-lg ${getMobileActiveClasses("/")}`}
+                  className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface transition-colors"
                 >
-                  Home
-                </Link>
-                <Link
-                  href="/about"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`px-4 py-3 rounded-xl font-medium text-lg ${getMobileActiveClasses("/about")}`}
-                >
-                  About
-                </Link>
-                {user?.role !== "admin" && (
-                  <Link
-                    href="/my-classes"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`px-4 py-3 rounded-xl font-medium text-lg ${getMobileActiveClasses("/my-classes")}`}
-                  >
-                    My Classes
-                  </Link>
-                )}
+                  <X size={20} />
+                </button>
               </div>
 
-              <div className="border-t border-border pt-6">
-                {user ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 px-4">
-                      <img
-                        src={
-                          user.photoURL ||
-                          "https://ui-avatars.com/api/?name=" +
-                            (user.displayName || "User")
-                        }
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      <div>
-                        <p className="font-bold">
-                          {user.displayName || "User"}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {user.email}
-                        </p>
+              <div className="flex-1 overflow-y-auto space-y-6">
+                <div className="flex flex-col space-y-2">
+                  <Link
+                    href="/"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`px-4 py-3 rounded-xl font-medium text-lg ${getMobileActiveClasses("/")}`}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    href="/about"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`px-4 py-3 rounded-xl font-medium text-lg ${getMobileActiveClasses("/about")}`}
+                  >
+                    About
+                  </Link>
+                  {user?.role !== "admin" && (
+                    <Link
+                      href="/my-classes"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`px-4 py-3 rounded-xl font-medium text-lg ${getMobileActiveClasses("/my-classes")}`}
+                    >
+                      My Classes
+                    </Link>
+                  )}
+                </div>
+
+                <div className="border-t border-border pt-6">
+                  {user ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 px-4">
+                        <img
+                          src={
+                            user.photoURL ||
+                            "https://ui-avatars.com/api/?name=" +
+                              (user.displayName || "User")
+                          }
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        <div>
+                          <p className="font-bold">
+                            {user.displayName || "User"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {user?.role === "admin" && (
+                          <Link
+                            href="/dashboard"
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium ${pathname.startsWith("/dashboard") ? "bg-primary/10 text-primary" : "hover:bg-surface"}`}
+                          >
+                            Dashboard
+                          </Link>
+                        )}
+                        <Link
+                          href="/profile"
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium ${pathname === "/profile" ? "bg-primary/10 text-primary" : "hover:bg-surface"}`}
+                        >
+                          Profile
+                        </Link>
+                        <button
+                          onClick={logout}
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-600 dark:text-red-400 font-medium text-left"
+                        >
+                          Logout
+                        </button>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      {user?.role === "admin" && (
-                        <Link
-                          href="/dashboard/manage-courses"
-                          className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium ${pathname.startsWith("/dashboard") ? "bg-primary/10 text-primary" : "hover:bg-surface"}`}
-                        >
-                          Dashboard
-                        </Link>
-                      )}
+                  ) : (
+                    <div className="grid gap-3">
                       <Link
-                        href="/profile"
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium ${pathname === "/profile" ? "bg-primary/10 text-primary" : "hover:bg-surface"}`}
+                        href="/login"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="w-full py-3 text-center font-bold hover:bg-surface rounded-md border border-border"
                       >
-                        Profile
+                        Login
                       </Link>
-                      <button
-                        onClick={logout}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-600 dark:text-red-400 font-medium text-left"
+                      <Link
+                        href="/signup"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="w-full py-3 text-center font-bold bg-primary text-black rounded-md hover:bg-primary-hover"
                       >
-                        Logout
-                      </button>
+                        Sign Up
+                      </Link>
                     </div>
-                  </div>
-                ) : (
-                  <div className="grid gap-3">
-                    <Link
-                      href="/login"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="w-full py-3 text-center font-bold hover:bg-surface rounded-md border border-border"
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      href="/signup"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="w-full py-3 text-center font-bold bg-primary text-black rounded-md hover:bg-primary-hover"
-                    >
-                      Sign Up
-                    </Link>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

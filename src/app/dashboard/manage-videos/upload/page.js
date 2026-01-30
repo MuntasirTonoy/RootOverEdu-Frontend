@@ -15,6 +15,7 @@ import {
   Upload,
   FileText,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
@@ -105,12 +106,20 @@ const ManageVideos = () => {
       try {
         const token = await auth.currentUser.getIdToken();
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects?limit=1000`, // Fetch all for dropdowns
           {
             headers: { Authorization: `Bearer ${token}` },
           },
         );
-        setAvailableSubjects(res.data);
+
+        // Handle paginated response
+        if (res.data.data) {
+          setAvailableSubjects(res.data.data);
+        } else if (Array.isArray(res.data)) {
+          setAvailableSubjects(res.data);
+        } else {
+          setAvailableSubjects([]);
+        }
       } catch (error) {
         console.error("Error fetching subjects:", error);
         Swal.fire("Error", "Failed to load subjects", "error");
@@ -579,7 +588,7 @@ const ManageVideos = () => {
               className="flex items-center justify-center gap-2 rounded-md bg-primary px-8 py-2.5 font-semibold text-primary-foreground flex-1 md:flex-none min-w-[160px] shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
             >
               {loading ? (
-                <span className="loading loading-spinner loading-sm"></span>
+                <Loader2 className="animate-spin w-4 h-4" />
               ) : (
                 <Save size={18} />
               )}
