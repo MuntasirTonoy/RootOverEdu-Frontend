@@ -40,6 +40,7 @@ export default function ManageVideosList() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState(null);
   const [updateLoading, setUpdateLoading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
   const [availableSubjects, setAvailableSubjects] = useState([]);
@@ -126,6 +127,7 @@ export default function ManageVideosList() {
 
   const handleEditClick = (video) => {
     if (video.editLogId) {
+      setEditingId(video._id);
       router.push(`/dashboard/edit-panel/${video.editLogId}`);
     } else {
       toast.info("Legacy videos cannot be batch edited");
@@ -304,10 +306,15 @@ export default function ManageVideosList() {
                       </a>
                       <button
                         onClick={() => handleEditClick(video)}
-                        className="p-2 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"
+                        disabled={editingId === video._id}
+                        className="p-2 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors disabled:opacity-50"
                         title="Edit Video"
                       >
-                        <Edit size={18} />
+                        {editingId === video._id ? (
+                          <Loader2 className="animate-spin w-4 h-4" />
+                        ) : (
+                          <Edit size={18} />
+                        )}
                       </button>
                       <button
                         onClick={() => handleDelete(video._id)}
@@ -400,9 +407,14 @@ export default function ManageVideosList() {
                 <div className="flex gap-2 items-center">
                   <button
                     onClick={() => handleEditClick(video)}
-                    className="p-2 bg-blue-50 text-blue-500 rounded-md"
+                    disabled={editingId === video._id}
+                    className="p-2 bg-blue-50 text-blue-500 rounded-md disabled:opacity-50"
                   >
-                    <Edit size={16} />
+                    {editingId === video._id ? (
+                      <Loader2 className="animate-spin w-4 h-4" />
+                    ) : (
+                      <Edit size={16} />
+                    )}
                   </button>
                   <button
                     onClick={() => handleDelete(video._id)}

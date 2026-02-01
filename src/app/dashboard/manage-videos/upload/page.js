@@ -21,6 +21,7 @@ import { useAuth } from "@/context/AuthContext";
 import { auth } from "@/lib/firebase";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const CustomDropdown = ({
   label,
@@ -89,6 +90,7 @@ const CustomDropdown = ({
 
 const ManageVideos = () => {
   const { user } = useAuth();
+  const router = useRouter();
 
   // Data State
   const [availableSubjects, setAvailableSubjects] = useState([]);
@@ -266,6 +268,7 @@ const ManageVideos = () => {
       setVideoParts([
         { partNumber: 1, title: "", videoUrl: "", noteLink: "", isFree: false },
       ]);
+      router.push("/dashboard/manage-videos");
     } catch (error) {
       console.error("Error creating videos:", error);
       toast.error("Upload failed. Check console.");
