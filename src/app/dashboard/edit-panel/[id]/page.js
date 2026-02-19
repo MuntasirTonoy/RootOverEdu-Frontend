@@ -120,7 +120,7 @@ export default function EditPanel() {
 
         // 1. Fetch Subjects
         const subjectsRes = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects?limit=1000`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         // Handle paginated response
@@ -172,7 +172,10 @@ export default function EditPanel() {
           ]);
         }
       } catch (err) {
-        console.error("Failed to fetch data", err);
+        console.error(
+          "Failed to fetch data:",
+          err?.response?.data || err.message || err,
+        );
         toast.error("Failed to load edit details");
       } finally {
         setFetching(false);

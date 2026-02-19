@@ -79,8 +79,10 @@ export default function ManageVideosList() {
         setAvailableSubjects(subjectsRes.data);
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
-
+      console.error(
+        "Error fetching data:",
+        error?.response?.data || error.message || error,
+      );
       toast.error("Failed to load videos");
     } finally {
       setLoading(false);
@@ -260,8 +262,20 @@ export default function ManageVideosList() {
                     {(() => {
                       const sub = video.subjectId;
                       const sId = sub?._id || sub;
-                      const cId = sub?.courseId?._id || sub?.courseId;
+                      const cId =
+                        sub?.courseId?._id || sub?.courseId || "course";
                       const chapter = video.chapterName?.trim() || "Untitled";
+
+                      if (!sId) {
+                        return (
+                          <div
+                            className="w-10 h-10 rounded-lg bg-gray-100 text-gray-400 flex items-center justify-center shrink-0"
+                            title="Missing subject data"
+                          >
+                            <PlayCircle size={20} />
+                          </div>
+                        );
+                      }
 
                       return (
                         <Link
@@ -353,8 +367,29 @@ export default function ManageVideosList() {
               {(() => {
                 const sub = video.subjectId;
                 const sId = sub?._id || sub;
-                const cId = sub?.courseId?._id || sub?.courseId;
+                const cId = sub?.courseId?._id || sub?.courseId || "course";
                 const chapter = video.chapterName?.trim() || "Untitled";
+
+                if (!sId) {
+                  return (
+                    <div
+                      className="flex gap-3 items-center p-2 -mx-2 rounded-lg opacity-50"
+                      title="Missing subject data"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-gray-100 text-gray-400 flex items-center justify-center shrink-0 border border-gray-200/50">
+                        <PlayCircle size={24} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-sm text-foreground line-clamp-1 leading-tight mb-1">
+                          {video.title}
+                        </h3>
+                        <p className="text-[10px] text-muted-foreground truncate font-medium">
+                          Data error: Missing link
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
 
                 return (
                   <Link
