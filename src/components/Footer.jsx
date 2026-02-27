@@ -2,13 +2,18 @@
 
 export default function Footer() {
   return (
-    <footer className="bg-surface border-t border-border py-6 mt-auto transition-colors duration-300">
-      <div className="container-custom flex flex-col md:flex-row justify-between items-center gap-6">
+    <footer className="bg-surface border-t border-border py-4 md:py-6 mt-auto transition-colors duration-300">
+      <div className="container-custom flex flex-col md:flex-row justify-between items-center gap-2 md:gap-6">
+        {/* Logo + Title + Version badge (mobile only) */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground text-sm font-bold">
             <span className="text-white">R</span>
           </div>
           <span className="font-bold text-foreground">Root Over Education</span>
+          {/* Version badge — visible only on mobile, inline with title */}
+          <span className="md:hidden text-xs font-semibold px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 ml-1">
+            v2A.26
+          </span>
         </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
@@ -37,8 +42,19 @@ export default function Footer() {
           </a>
         </div>
 
-        <p className="text-sm text-muted-foreground/80">
-          © 2026 Root Over Education. All rights reserved.
+        {/* Copyright + Version badge (desktop only) */}
+        <div className="hidden md:flex flex-col items-end gap-1">
+          <p className="text-sm text-muted-foreground/80 text-right">
+            &copy; 2026 Root Over Education. All rights reserved.
+          </p>
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
+            v2A.26
+          </span>
+        </div>
+
+        {/* Copyright text only (mobile — no version badge, it's with the title) */}
+        <p className="md:hidden text-xs text-muted-foreground/70 text-center">
+          &copy; 2026 Root Over Education. All rights reserved.
         </p>
       </div>
     </footer>

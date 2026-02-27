@@ -223,6 +223,29 @@ export default function CourseEditModal({
               />
             </div>
 
+            {/* Published Status Toggle */}
+            <div className="flex items-center gap-3 p-4 rounded-xl border border-border bg-gradient-to-r from-muted/10 to-transparent">
+              <div className="flex flex-col flex-1">
+                <label className="text-sm font-bold text-foreground">
+                  Publish Course
+                </label>
+                <p className="text-xs text-muted-foreground">
+                  Make this course visible to students immediately
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={formData.isPublished || false}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isPublished: e.target.checked })
+                  }
+                />
+                <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/40 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+
             {/* Thumbnail Upload */}
             <ImageUpload
               value={formData.thumbnail}

@@ -14,7 +14,6 @@ import {
   Plus,
   Trash2,
   Image as ImageIcon,
-  Globe,
 } from "lucide-react";
 
 export default function SiteConfigEditor() {
@@ -42,24 +41,15 @@ export default function SiteConfigEditor() {
 
   const [linksData, setLinksData] = useState([]);
 
-  const [moreInfoData, setMoreInfoData] = useState({
-    youtubeChannel: "",
-    websiteUrl: "",
-    location: "",
-    subscribeButtonText: "",
-  });
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [bannerRes, aboutRes, contactRes, linksRes, moreInfoRes] =
-          await Promise.all([
-            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/config/banner`),
-            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/config/about`),
-            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/config/contact`),
-            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/config/links`),
-            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/config/moreInfo`),
-          ]);
+        const [bannerRes, aboutRes, contactRes, linksRes] = await Promise.all([
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/config/banner`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/config/about`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/config/contact`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/config/links`),
+        ]);
 
         if (bannerRes.data && Object.keys(bannerRes.data).length > 0) {
           setBannerData((prev) => ({ ...prev, ...bannerRes.data }));
@@ -94,17 +84,6 @@ export default function SiteConfigEditor() {
         if (linksRes.data && Array.isArray(linksRes.data)) {
           setLinksData(linksRes.data);
         }
-
-        if (moreInfoRes.data && Object.keys(moreInfoRes.data).length > 0) {
-          setMoreInfoData(moreInfoRes.data);
-        } else {
-          setMoreInfoData({
-            youtubeChannel: "https://www.youtube.com/@RootOverEducation",
-            websiteUrl: "https://rootover.vercel.app",
-            location: "Bangladesh",
-            subscribeButtonText: "Subscribe Now",
-          });
-        }
       } catch (error) {
         console.error("Error fetching config:", error);
       } finally {
@@ -134,9 +113,6 @@ export default function SiteConfigEditor() {
         case "links":
           configToSave = { key: "links", value: linksData };
           break;
-        case "moreInfo":
-          configToSave = { key: "moreInfo", value: moreInfoData };
-          break;
         default:
           return;
       }
@@ -152,7 +128,7 @@ export default function SiteConfigEditor() {
       Swal.fire({
         icon: "success",
         title: "Saved!",
-        text: `${activeTab === "moreInfo" ? "More Info" : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} settings updated successfully.`,
+        text: `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} settings updated successfully.`,
         timer: 1500,
         showConfirmButton: false,
       });
@@ -210,7 +186,6 @@ export default function SiteConfigEditor() {
     { id: "about", label: "About & Info", icon: Info },
     { id: "contact", label: "Contact Info", icon: Phone },
     { id: "links", label: "Official Links", icon: LinkIcon },
-    { id: "moreInfo", label: "More Info", icon: Globe },
   ];
 
   return (
@@ -525,95 +500,6 @@ export default function SiteConfigEditor() {
             </div>
           )}
 
-          {/* MORE INFO TAB */}
-          {activeTab === "moreInfo" && (
-            <div className="space-y-5 md:space-y-6 animate-in fade-in duration-300">
-              <div>
-                <label className="block text-sm font-bold text-foreground mb-2">
-                  YouTube Channel URL
-                </label>
-                <input
-                  type="url"
-                  className="w-full px-3 py-2.5 rounded-md border border-border bg-surface text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                  value={moreInfoData.youtubeChannel}
-                  onChange={(e) =>
-                    setMoreInfoData({
-                      ...moreInfoData,
-                      youtubeChannel: e.target.value,
-                    })
-                  }
-                  placeholder="https://www.youtube.com/@YourChannel"
-                />
-                <p className="text-xs text-muted-foreground mt-1.5">
-                  Full URL to your YouTube channel
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-foreground mb-2">
-                  Website URL
-                </label>
-                <input
-                  type="url"
-                  className="w-full px-3 py-2.5 rounded-md border border-border bg-surface text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                  value={moreInfoData.websiteUrl}
-                  onChange={(e) =>
-                    setMoreInfoData({
-                      ...moreInfoData,
-                      websiteUrl: e.target.value,
-                    })
-                  }
-                  placeholder="https://yourwebsite.com"
-                />
-                <p className="text-xs text-muted-foreground mt-1.5">
-                  Your main website URL
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-foreground mb-2">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2.5 rounded-md border border-border bg-surface text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                  value={moreInfoData.location}
-                  onChange={(e) =>
-                    setMoreInfoData({
-                      ...moreInfoData,
-                      location: e.target.value,
-                    })
-                  }
-                  placeholder="Bangladesh"
-                />
-                <p className="text-xs text-muted-foreground mt-1.5">
-                  Country or city location
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-foreground mb-2">
-                  Subscribe Button Text
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2.5 rounded-md border border-border bg-surface text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                  value={moreInfoData.subscribeButtonText}
-                  onChange={(e) =>
-                    setMoreInfoData({
-                      ...moreInfoData,
-                      subscribeButtonText: e.target.value,
-                    })
-                  }
-                  placeholder="Subscribe Now"
-                />
-                <p className="text-xs text-muted-foreground mt-1.5">
-                  Text shown on the YouTube subscribe button
-                </p>
-              </div>
-            </div>
-          )}
-
           {/* Save Button */}
           <div className="mt-8 pt-6 border-t border-border flex justify-end">
             <button
@@ -627,10 +513,7 @@ export default function SiteConfigEditor() {
                 <Save size={18} />
               )}
               <span>
-                Save{" "}
-                {activeTab === "moreInfo"
-                  ? "More Info"
-                  : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                Save {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
               </span>
             </button>
           </div>

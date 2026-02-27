@@ -6,15 +6,12 @@ import {
   Mail,
   MapPin,
   Youtube,
-  ShieldCheck,
-  Target,
-  Users,
-  ArrowRight,
   Globe,
-  Loader2,
   Phone,
   Facebook,
   Instagram,
+  Linkedin,
+  Twitter,
   Link as LinkIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -100,19 +97,22 @@ export default function AboutPage() {
           },
         ];
 
-  // Helper to find specific social links for icons
   const getSocialIcon = (url) => {
-    if (url.includes("facebook")) return <Facebook className="w-6 h-6" />;
-    if (url.includes("instagram")) return <Instagram className="w-6 h-6" />;
-    if (url.includes("youtube")) return <Youtube className="w-6 h-6" />;
-    return <LinkIcon className="w-6 h-6" />;
+    if (url.includes("facebook")) return <Facebook size={18} />;
+    if (url.includes("instagram")) return <Instagram size={18} />;
+    if (url.includes("youtube")) return <Youtube size={18} />;
+    if (url.includes("linkedin")) return <Linkedin size={18} />;
+    if (url.includes("twitter")) return <Twitter size={18} />;
+    return <LinkIcon size={18} />;
   };
 
   const getSocialColor = (url) => {
-    if (url.includes("facebook")) return "text-blue-600 bg-blue-50";
-    if (url.includes("instagram")) return "text-pink-600 bg-pink-50";
-    if (url.includes("youtube")) return "text-red-600 bg-red-50";
-    return "text-gray-600 bg-gray-50";
+    if (url.includes("facebook")) return "text-blue-600 bg-blue-500/10";
+    if (url.includes("instagram")) return "text-pink-600 bg-pink-500/10";
+    if (url.includes("youtube")) return "text-red-600 bg-red-500/10";
+    if (url.includes("linkedin")) return "text-blue-700 bg-blue-700/10";
+    if (url.includes("twitter")) return "text-sky-500 bg-sky-500/10";
+    return "text-foreground bg-surface";
   };
 
   return (
@@ -123,7 +123,7 @@ export default function AboutPage() {
           <div className="max-w-3xl mx-auto text-center">
             <motion.h1
               initial={{ opacity: 1 }}
-              className="text-4xl md:text-5xl font-extrabold mb-6 text-foreground tracking-tight h-[1.2em]"
+              className="text-4xl md:text-5xl font-extrabold mb-6 text-foreground tracking-tight"
             >
               {(aboutData?.title || "About Root Over Education")
                 .split("")
@@ -157,7 +157,7 @@ export default function AboutPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-card rounded-xl border border-border p-8"
+              className="bg-surface rounded-xl border border-border p-8"
             >
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-foreground">
                 <span className="w-10 h-1 rounded-full bg-primary"></span>
@@ -188,126 +188,6 @@ export default function AboutPage() {
                   Over Education."
                 </div>
               </div>
-
-              <div className="border-t border-dashed border-border my-8"></div>
-
-              <h3 className="text-xl font-bold mb-4 text-foreground">
-                Contact Information
-              </h3>
-              <div className="grid gap-4">
-                {contactData?.phone ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className="bg-surface rounded-xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 border border-border hover:border-primary/30 transition-colors"
-                  >
-                    <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-600">
-                      <Phone size={24} />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Phone / WhatsApp
-                      </p>
-                      <p className="text-xl font-bold text-foreground select-all">
-                        {contactData.phone}
-                      </p>
-                    </div>
-                  </motion.div>
-                ) : (
-                  // Fallback
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className="bg-surface rounded-xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 border border-border hover:border-primary/30 transition-colors"
-                  >
-                    <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-600">
-                      <Phone size={24} />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">
-                        WhatsApp Number
-                      </p>
-                      <p className="text-xl font-bold text-foreground select-all">
-                        01316271902
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-
-                {contactData?.address && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                    className="bg-surface rounded-xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 border border-border hover:border-primary/30 transition-colors"
-                  >
-                    <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">
-                      <MapPin size={24} />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Office Address
-                      </p>
-                      <p className="text-md font-bold text-foreground">
-                        {contactData.address}
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            </motion.div>
-
-            {/* Links Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-card rounded-xl border border-border p-8"
-            >
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-foreground">
-                <span className="w-10 h-1 rounded-full bg-primary"></span>
-                Official Links
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {linksData.length > 0 ? (
-                  linksData.map((link, index) => {
-                    const colorClass = getSocialColor(link.url);
-                    // extract color and bg from the combined string manually if needed, or just use inline styles in helper
-                    // defaulting to a simpler approach for the helper above
-                    const [textColor, bgColor] = colorClass.split(" ");
-
-                    return (
-                      <SocialLink
-                        key={index}
-                        href={link.url}
-                        icon={getSocialIcon(link.url)}
-                        title={link.label}
-                        color={textColor}
-                        bgColor={bgColor}
-                      />
-                    );
-                  })
-                ) : (
-                  <>
-                    <SocialLink
-                      href="https://facebook.com/nahidislam.4373"
-                      icon={<Facebook className="w-6 h-6" />}
-                      title="Facebook Profile"
-                      color="text-blue-600"
-                      bgColor="bg-blue-50"
-                    />
-                    <SocialLink
-                      href="https://facebook.com/rootovereducation"
-                      icon={<Facebook className="w-6 h-6" />}
-                      title="Facebook Page"
-                      color="text-blue-600"
-                      bgColor="bg-blue-50"
-                    />
-                  </>
-                )}
-              </div>
             </motion.div>
           </div>
 
@@ -317,16 +197,43 @@ export default function AboutPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-card rounded-xl border border-border sticky top-24 p-6"
+              className="bg-surface rounded-xl border border-border sticky top-24 p-6"
             >
               <h3 className="text-lg font-bold mb-4 text-foreground">
                 More Info
               </h3>
 
               <ul className="space-y-4">
-                {contactData?.email ? (
+                {contactData?.address ? (
                   <li className="flex items-center gap-3 text-muted-foreground">
-                    <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-foreground shrink-0">
+                    <div className="w-8 h-8 rounded-lg text-green-600 bg-green-500/10 flex items-center justify-center shrink-0">
+                      <MapPin size={18} />
+                    </div>
+                    <span className="text-sm font-medium">
+                      {contactData.address}
+                    </span>
+                  </li>
+                ) : (
+                  <li className="flex items-center gap-3 text-muted-foreground">
+                    <div className="w-8 h-8 rounded-lg text-green-600 bg-green-500/10 flex items-center justify-center shrink-0">
+                      <MapPin size={18} />
+                    </div>
+                    <span className="text-sm font-medium">Bangladesh</span>
+                  </li>
+                )}
+
+                <li className="flex items-center gap-3 text-muted-foreground">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-green-600 bg-green-500/10 shrink-0">
+                    <Phone size={18} />
+                  </div>
+                  <span className="text-sm font-medium select-all">
+                    {contactData?.phone || "01316271902"}
+                  </span>
+                </li>
+
+                {contactData?.email && (
+                  <li className="flex items-center gap-3 text-muted-foreground">
+                    <div className="w-8 h-8 rounded-lg text-green-600 bg-green-500/10 flex items-center justify-center shrink-0">
                       <Mail size={18} />
                     </div>
                     <a
@@ -336,86 +243,58 @@ export default function AboutPage() {
                       {contactData.email}
                     </a>
                   </li>
-                ) : (
-                  <li className="flex items-center gap-3 text-muted-foreground">
-                    <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-foreground shrink-0">
-                      <Mail size={18} />
-                    </div>
-                    <span className="text-sm font-medium">
-                      View email address
-                    </span>
-                  </li>
                 )}
 
-                <li className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors">
-                  <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-600 shrink-0">
-                    <Youtube size={18} />
-                  </div>
-                  <Link
-                    href="https://www.youtube.com/@RootOverEducation"
-                    target="_blank"
-                    className="text-sm font-medium break-all"
-                  >
-                    www.youtube.com/@RootOverEducation
-                  </Link>
-                </li>
                 <li className="flex items-center gap-3 text-muted-foreground">
-                  <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-foreground shrink-0">
-                    <MapPin size={18} />
-                  </div>
-                  <span className="text-sm font-medium">Bangladesh</span>
-                </li>
-
-                <li className="flex items-center gap-3 text-muted-foreground">
-                  <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-foreground shrink-0">
+                  <div className="w-8 h-8 rounded-lg text-green-600 bg-green-500/10 flex items-center justify-center shrink-0">
                     <Globe size={18} />
                   </div>
                   <Link
                     href="https://rootover.vercel.app"
                     target="_blank"
-                    className="text-sm font-medium"
+                    className="text-sm font-medium hover:text-primary transition-colors"
                   >
                     rootover.vercel.app
                   </Link>
                 </li>
               </ul>
 
-              <div className="mt-6 pt-6 border-t border-border">
-                <Link
-                  href="https://www.youtube.com/@RootOverEducation?sub_confirmation=1"
-                  target="_blank"
-                  className="w-full bg-primary hover:bg-primary-hover text-primary-foreground border-none  flex justify-center items-center gap-2 py-3 rounded-md font-bold transition-all"
-                >
-                  <Youtube size={20} />
-                  Subscribe Now
-                </Link>
-              </div>
+              {/* Social Links injected directly into sidebar array */}
+              {linksData.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-border space-y-4">
+                  <h4 className="text-sm font-bold text-foreground">
+                    Follow Us
+                  </h4>
+                  <ul className="space-y-3">
+                    {linksData.map((link, i) => {
+                      const colorClass = getSocialColor(link.url);
+                      return (
+                        <li
+                          key={i}
+                          className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <div
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${colorClass}`}
+                          >
+                            {getSocialIcon(link.url)}
+                          </div>
+                          <Link
+                            href={link.url}
+                            target="_blank"
+                            className="text-sm font-medium hover:underline decoration-primary/50 underline-offset-4"
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
             </motion.div>
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-function SocialLink({ href, icon, title, color, bgColor }) {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      className="flex items-center gap-4 p-4 rounded-md border border-border hover:border-primary/30 hover:shadow-md transition-all group bg-card"
-    >
-      <div
-        className={`w-12 h-12 rounded-full ${bgColor} flex items-center justify-center ${color} group-hover:scale-110 transition-transform`}
-      >
-        {icon}
-      </div>
-      <div>
-        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-          {title}
-        </h4>
-        <span className="text-xs text-muted-foreground">View Profile</span>
-      </div>
-    </Link>
   );
 }

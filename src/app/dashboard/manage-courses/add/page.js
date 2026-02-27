@@ -286,7 +286,7 @@ const AddCourse = () => {
               <h1 className="text-xl font-bold text-foreground">
                 Add New Course
               </h1>
-              <p className="text-xs text-muted-foreground">Upload Panel</p>
+              <p className="text-xs text-muted-foreground">Upload a Course</p>
             </div>
           </div>
         </div>

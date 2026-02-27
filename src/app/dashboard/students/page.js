@@ -5,7 +5,15 @@ import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { auth } from "@/lib/firebase";
 import Swal from "sweetalert2";
-import { User, Users, Shield, ShieldOff, Search } from "lucide-react";
+import {
+  User,
+  Users,
+  Shield,
+  ShieldOff,
+  Search,
+  Ban,
+  CheckCircle,
+} from "lucide-react";
 
 import LoadingAnimation from "@/components/LoadingAnimation";
 
@@ -95,6 +103,42 @@ export default function StudentsPage() {
     });
   };
 
+  const toggleBan = async (userId, isCurrentlyBanned) => {
+    const newBanStatus = !isCurrentlyBanned;
+    const actionText = newBanStatus ? "Ban User" : "Unban User";
+
+    Swal.fire({
+      title: `Are you sure?`,
+      text: `Do you want to ${actionText.toLowerCase()}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: `Yes, ${actionText}`,
+      confirmButtonColor: newBanStatus ? "#d33" : "#3085d6",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = await auth.currentUser.getIdToken();
+          await axios.put(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/admin/user/${userId}/ban`,
+            { isBanned: newBanStatus },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+          Swal.fire(
+            "Success",
+            `User ${newBanStatus ? "banned" : "unbanned"} successfully`,
+            "success",
+          );
+          fetchUsers();
+        } catch (error) {
+          console.error("Error updating ban status:", error);
+          Swal.fire("Error", "Failed to update ban status", "error");
+        }
+      }
+    });
+  };
+
   return (
     <div className="p-6 lg:p-8 space-y-6">
       {/* Header */}
@@ -174,14 +218,35 @@ export default function StudentsPage() {
                     )}
                   </td>
                   <td className="text-muted-foreground text-left">{u.email}</td>
-                  <td className="text-left">
+                  <td className="text-left space-x-2">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${u.role === "admin" ? " bg-green-100 text-green-700" : "bg-muted text-white"}`}
                     >
                       {u.role.toUpperCase()}
                     </span>
+                    {u.isBanned && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                        BANNED
+                      </span>
+                    )}
                   </td>
-                  <td className="pr-6 text-right">
+                  <td className="pr-6 text-right space-x-2">
+                    {u.email !== user.email && (
+                      <button
+                        onClick={() => toggleBan(u._id, u.isBanned)}
+                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${u.isBanned ? "text-green-500 hover:bg-green-50" : "text-amber-500 hover:bg-amber-50"}`}
+                      >
+                        {u.isBanned ? (
+                          <>
+                            <CheckCircle size={16} /> Unban
+                          </>
+                        ) : (
+                          <>
+                            <Ban size={16} /> Ban
+                          </>
+                        )}
+                      </button>
+                    )}
                     {u.email !== user.email && (
                       <button
                         onClick={() => toggleRole(u._id, u.role)}
@@ -245,19 +310,36 @@ export default function StudentsPage() {
               </div>
 
               <div className="flex justify-between items-center pt-2 mt-2">
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${u.role === "admin" ? "bg-green-400 text-white" : "bg-muted text-white"}`}
-                >
-                  {u.role.toUpperCase()}
-                </span>
-                {u.email !== user.email && (
-                  <button
-                    onClick={() => toggleRole(u._id, u.role)}
-                    className={`text-xs font-bold ${u.role === "admin" ? "text-red-500" : "text-primary"}`}
+                <div className="flex gap-2">
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${u.role === "admin" ? "bg-green-400 text-white" : "bg-muted text-white"}`}
                   >
-                    {u.role === "admin" ? "Remove Admin" : "Make Admin"}
-                  </button>
-                )}
+                    {u.role.toUpperCase()}
+                  </span>
+                  {u.isBanned && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                      BANNED
+                    </span>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  {u.email !== user.email && (
+                    <button
+                      onClick={() => toggleBan(u._id, u.isBanned)}
+                      className={`text-xs font-bold ${u.isBanned ? "text-green-500" : "text-amber-500"}`}
+                    >
+                      {u.isBanned ? "Unban" : "Ban"}
+                    </button>
+                  )}
+                  {u.email !== user.email && (
+                    <button
+                      onClick={() => toggleRole(u._id, u.role)}
+                      className={`text-xs font-bold ${u.role === "admin" ? "text-red-500" : "text-primary"}`}
+                    >
+                      {u.role === "admin" ? "Remove Admin" : "Make Admin"}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))

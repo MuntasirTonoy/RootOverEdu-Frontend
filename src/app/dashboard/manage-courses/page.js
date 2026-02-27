@@ -29,6 +29,7 @@ export default function ManageCourses() {
     department: "",
     yearLevel: "",
     thumbnail: "",
+    isPublished: false,
   });
 
   const fetchCourses = async () => {
@@ -62,6 +63,7 @@ export default function ManageCourses() {
         department: "",
         yearLevel: "",
         thumbnail: "",
+        isPublished: false,
       });
     }
     setModalOpen(true);
@@ -157,19 +159,20 @@ export default function ManageCourses() {
               <th className="p-4 text-left">Course</th>
               <th className="text-left">Department</th>
               <th className="text-left">Year</th>
+              <th className="text-center">Status</th>
               <th className="text-right pr-6">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="4" className="p-6 text-center">
+                <td colSpan="5" className="p-6 text-center">
                   <LoadingAnimation />
                 </td>
               </tr>
             ) : courses.length === 0 ? (
               <tr>
-                <td colSpan="4" className="p-6 text-center">
+                <td colSpan="5" className="p-6 text-center">
                   <EmptyState
                     message="No Courses Found"
                     description="Create your first course to get started."
@@ -188,6 +191,13 @@ export default function ManageCourses() {
                   </td>
                   <td className="text-left">{c.department}</td>
                   <td className="text-left">{c.yearLevel}</td>
+                  <td className="text-center">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${c.isPublished ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
+                    >
+                      {c.isPublished ? "PUBLISHED" : "DRAFT"}
+                    </span>
+                  </td>
                   <td className="pr-6 text-right space-x-2">
                     <button
                       onClick={() => openModal(c)}
@@ -233,8 +243,17 @@ export default function ManageCourses() {
                   className="w-14 h-14 rounded-md object-cover"
                 />
                 <div>
-                  <h3 className="font-bold">{c.title}</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="font-bold flex items-center gap-2">
+                    {c.title}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${c.isPublished ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
+                    >
+                      {c.isPublished ? "Published" : "Draft"}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
                     {c.department}
                   </p>
                   <p className="text-sm">{c.yearLevel}</p>

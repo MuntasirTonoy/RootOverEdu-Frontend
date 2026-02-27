@@ -1,6 +1,14 @@
 # Root Over Education - Science Learning Platform
 
+**Version 2A.26**
+
 Root Over Education is a modern, responsive e-learning platform dedicated to mastering science subjects for SSC, HSC, and BSc students. Built with the cutting-edge **Next.js 16** and **Tailwind CSS 4**, this application provides a premium user experience for students and a robust management interface for administrators.
+
+## 🚀 What's New in Version 2A.26
+
+- **User Ban System**: Admin users now have full capability to ban or unban users via sweetalert confirmations and red "BANNED" badges inline.
+- **Improved User Search**: Eliminates case sensitivity strictly making the dashboard search fluid for finding any student queries.
+- **Course Publishing Toggle**: Easily switch courses from "Published" to "Draft" states to ensure content isn't published prematurely to students. Visual badges are also available for fast navigation.
 
 ## 🚀 Features
 
