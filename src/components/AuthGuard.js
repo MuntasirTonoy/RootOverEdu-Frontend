@@ -39,7 +39,8 @@ export default function AuthGuard({
   const isAllowedByRole =
     allowedRoles.length === 0 || allowedRoles.includes(user.role);
   const isForbiddenByRole = forbiddenRoles.includes(user.role);
-  const accessDenied = !isAllowedByRole || isForbiddenByRole;
+  const isBanned = user.isBanned;
+  const accessDenied = !isAllowedByRole || isForbiddenByRole || isBanned;
 
   if (accessDenied) {
     return (
@@ -47,10 +48,13 @@ export default function AuthGuard({
         <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-full mb-6 animate-in zoom-in duration-300">
           <AlertCircle className="text-red-500" size={64} />
         </div>
-        <h1 className="text-3xl font-bold mb-2">Access Denied</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          {isBanned ? "Account Suspended" : "Access Denied"}
+        </h1>
         <p className="text-muted-foreground mb-8 max-w-md">
-          You don't have permission to access the requested page. Please contact
-          your administrator if you believe this is a mistake.
+          {isBanned
+            ? "Your account has been restricted due to a violation of our terms of service. You will not be able to access premium content or your profile."
+            : "You don't have permission to access the requested page. Please contact your administrator if you believe this is a mistake."}
         </p>
         <Link
           href="/"

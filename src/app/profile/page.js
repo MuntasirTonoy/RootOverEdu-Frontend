@@ -89,7 +89,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const fetchSavedVideos = async () => {
-      if (!user || !user._id) return;
+      if (!user || !user._id || user.isBanned) return;
       try {
         const token = await auth.currentUser.getIdToken();
         const res = await axios.get(

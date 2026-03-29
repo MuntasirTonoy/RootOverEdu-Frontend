@@ -39,7 +39,7 @@ function LearnPageContent({ courseId, subjectId }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user) return;
+      if (!user || user.isBanned) return;
 
       try {
         setLoading(true);

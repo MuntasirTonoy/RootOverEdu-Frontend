@@ -18,7 +18,8 @@ export default function MyClasses() {
       if (
         !user ||
         !user.purchasedSubjects ||
-        user.purchasedSubjects.length === 0
+        user.purchasedSubjects.length === 0 ||
+        user.isBanned
       ) {
         setLoading(false);
         return;

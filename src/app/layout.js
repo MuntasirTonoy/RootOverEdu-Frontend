@@ -17,6 +17,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
+import BannedPopup from "@/components/BannedPopup";
 
 export default function RootLayout({ children }) {
   return (
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
             disableTransitionOnChange
           >
             <Navbar />
+            <BannedPopup />
             <main className="flex-1">{children}</main>
             <Footer />
             <Toaster position="top-center" richColors />

@@ -38,6 +38,7 @@ function CheckoutContent({ searchParams }) {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (user?.isBanned) return;
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/api/courses/${courseId}`,
