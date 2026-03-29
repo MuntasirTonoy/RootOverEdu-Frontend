@@ -44,6 +44,11 @@ export default function ManageVideosList() {
   const [deletingId, setDeletingId] = useState(null);
 
   const [availableSubjects, setAvailableSubjects] = useState([]);
+  
+  // Filter State
+  const [selectedDept, setSelectedDept] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedSubjectId, setSelectedSubjectId] = useState("");
 
   const fetchData = async () => {
     try {
@@ -51,9 +56,18 @@ export default function ManageVideosList() {
       const token = await auth.currentUser.getIdToken();
       const header = { headers: { Authorization: `Bearer ${token}` } };
 
+      const queryParams = new URLSearchParams({
+        page: currentPage,
+        limit: 10,
+      });
+
+      if (selectedDept) queryParams.append("department", selectedDept);
+      if (selectedYear) queryParams.append("yearLevel", selectedYear);
+      if (selectedSubjectId) queryParams.append("subjectId", selectedSubjectId);
+
       const [videosRes, subjectsRes] = await Promise.all([
         axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/videos?page=${currentPage}&limit=10`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/videos?${queryParams.toString()}`,
           header,
         ),
         // Fetch all subjects for the dropdowns
@@ -93,7 +107,7 @@ export default function ManageVideosList() {
     if (user) {
       fetchData();
     }
-  }, [user, currentPage]);
+  }, [user, currentPage, selectedDept, selectedYear, selectedSubjectId]);
 
   const handleDelete = async (id) => {
     Swal.fire({
@@ -195,6 +209,43 @@ export default function ManageVideosList() {
     }
   };
 
+  // Derived Data for Filters
+  const departmentOptions = [
+    ...new Set(availableSubjects.map((s) => s.department)),
+  ]
+    .filter(Boolean)
+    .sort();
+
+  const yearOptions = selectedDept
+    ? [
+        ...new Set(
+          availableSubjects
+            .filter((s) => s.department === selectedDept)
+            .map((s) => s.yearLevel),
+        ),
+      ]
+        .filter(Boolean)
+        .sort()
+    : [];
+
+  const subjectOptions =
+    selectedDept && selectedYear
+      ? availableSubjects
+          .filter(
+            (s) =>
+              s.department === selectedDept && s.yearLevel === selectedYear,
+          )
+          .map((s) => {
+            const idVal = s._id?.$oid || s._id;
+            if (!idVal) return null;
+            return {
+              label: `[${s.code || "N/A"}] ${s.title}`,
+              value: idVal,
+            };
+          })
+          .filter(Boolean)
+      : [];
+
   return (
     <div className="p-6 lg:p-8 space-y-6 bg-background min-h-screen">
       {/* Header */}
@@ -222,6 +273,91 @@ export default function ManageVideosList() {
           />
           Upload Video
         </Link>
+      </div>
+
+      {/* Filters Section */}
+      <div className="bg-card p-4 rounded-md border border-border flex flex-col md:flex-row gap-4 items-end">
+        <div className="flex flex-col gap-1.5 w-full md:w-1/3">
+          <label className="text-xs font-semibold text-muted-foreground uppercase opacity-80">
+            Department
+          </label>
+          <select
+            className="w-full text-sm p-2.5 rounded-md border border-border bg-surface outline-none focus:border-primary transition-colors text-foreground"
+            value={selectedDept}
+            onChange={(e) => {
+              setSelectedDept(e.target.value);
+              setSelectedYear("");
+              setSelectedSubjectId("");
+              setCurrentPage(1);
+            }}
+          >
+            <option value="">All Departments</option>
+            {departmentOptions.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1.5 w-full md:w-1/3">
+          <label className="text-xs font-semibold text-muted-foreground uppercase opacity-80">
+            Year Level
+          </label>
+          <select
+            className="w-full text-sm p-2.5 rounded-md border border-border bg-surface outline-none focus:border-primary transition-colors text-foreground disabled:opacity-50"
+            value={selectedYear}
+            disabled={!selectedDept}
+            onChange={(e) => {
+              setSelectedYear(e.target.value);
+              setSelectedSubjectId("");
+              setCurrentPage(1);
+            }}
+          >
+            <option value="">All Year Levels</option>
+            {yearOptions.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1.5 w-full md:w-1/3">
+          <label className="text-xs font-semibold text-muted-foreground uppercase opacity-80">
+            Subject
+          </label>
+          <select
+            className="w-full text-sm p-2.5 rounded-md border border-border bg-surface outline-none focus:border-primary transition-colors text-foreground disabled:opacity-50"
+            value={selectedSubjectId}
+            disabled={!selectedYear}
+            onChange={(e) => {
+              setSelectedSubjectId(e.target.value);
+              setCurrentPage(1);
+            }}
+          >
+            <option value="">All Subjects</option>
+            {subjectOptions.map((subj) => (
+              <option key={subj.value} value={subj.value}>
+                {subj.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        
+        {(selectedDept || selectedYear || selectedSubjectId) && (
+          <button
+            onClick={() => {
+              setSelectedDept("");
+              setSelectedYear("");
+              setSelectedSubjectId("");
+              setCurrentPage(1);
+            }}
+            className="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 px-4 py-2.5 rounded-md whitespace-nowrap"
+          >
+            Clear Filters
+          </button>
+        )}
       </div>
 
       {/* Video Inventory Table */}

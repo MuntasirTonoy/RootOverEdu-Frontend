@@ -250,11 +250,11 @@ export default function AboutPage() {
                     <Globe size={18} />
                   </div>
                   <Link
-                    href="https://rootover.vercel.app"
+                    href="https://rootover.site"
                     target="_blank"
                     className="text-sm font-medium hover:text-primary transition-colors"
                   >
-                    rootover.vercel.app
+                    rootover.site
                   </Link>
                 </li>
               </ul>
