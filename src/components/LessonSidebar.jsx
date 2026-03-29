@@ -27,14 +27,10 @@ export default function LessonSidebar({
 
   return (
     <div className="h-full bg-background border-r border-border flex flex-col transition-colors duration-300">
-      <div className="p-6 border-b border-border flex justify-between items-center">
-        <div>
-          <h2 className="font-bold text-foreground text-lg">Course Content</h2>
-          <div className="flex items-center gap-2 mt-2"></div>
-        </div>
+      <div className="flex justify-end items-end p-4">
         <button
           onClick={onClose}
-          className="lg:hidden p-2 hover:bg-surface rounded-lg text-foreground"
+          className="lg:hidden p-3 bg-surface rounded-lg text-foreground"
         >
           ✕
         </button>
