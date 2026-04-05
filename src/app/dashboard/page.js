@@ -60,16 +60,33 @@ const DashboardOverview = () => {
     }
   }, [user]);
 
+  const maxDataValue = Math.max(
+    stats.totalUsers || 0,
+    stats.purchasedCourseStudent || 0,
+    stats.totalCourses || 0,
+    stats.totalVideos || 0
+  );
+  // Ensure the chart at least goes up to 300 for a consistent view, expanding dynamically by 100s
+  const maxTick = Math.max(Math.ceil(maxDataValue / 100) * 100, 300);
+  
+  // Power factor to forcefully boost the height of small numbers (making courses/students look taller)
+  const boostPower = 0.35;
+  const rawTicks = Array.from({ length: (maxTick / 100) + 1 }, (_, i) => i * 100);
+  const yAxisTicks = rawTicks.map(val => Math.pow(val, boostPower));
+
   const chartData = [
-    { name: "Total Students", value: stats.totalUsers, color: "#4F46E5" },
+    { name: "Total Students", value: stats.totalUsers || 0, color: "#4F46E5" },
     {
       name: "Paid Students",
-      value: stats.purchasedCourseStudent,
+      value: stats.purchasedCourseStudent || 0,
       color: "#F59E0B",
     },
-    { name: "Courses", value: stats.totalCourses, color: "#10B981" },
-    { name: "Videos", value: stats.totalVideos, color: "#EC4899" },
-  ];
+    { name: "Courses", value: stats.totalCourses || 0, color: "#10B981" },
+    { name: "Videos", value: stats.totalVideos || 0, color: "#EC4899" },
+  ].map(item => ({
+    ...item,
+    plotValue: Math.pow(item.value, boostPower)
+  }));
 
   if (loading) {
     return (
@@ -212,9 +229,13 @@ const DashboardOverview = () => {
                         angle={0}
                       />
                       <YAxis
+                        domain={[0, Math.pow(maxTick, boostPower)]}
+                        ticks={yAxisTicks}
+                        allowDataOverflow
                         axisLine={false}
                         tickLine={false}
                         tick={{ fill: "#9CA3AF", fontSize: 11 }}
+                        tickFormatter={(val) => Math.round(Math.pow(val, 1 / boostPower))}
                       />
                       <Tooltip
                         cursor={{ fill: "rgba(255, 255, 255, 0.05)" }}
@@ -225,8 +246,9 @@ const DashboardOverview = () => {
                           color: "#F9FAFB",
                           fontSize: "12px",
                         }}
+                        formatter={(value, name, props) => [props.payload.value, props.payload.name]}
                       />
-                      <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                      <Bar dataKey="plotValue" radius={[8, 8, 0, 0]}>
                         {chartData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
